@@ -1,6 +1,6 @@
 {
     "version":  "1.0.0",
-    "last_updated":  "2026-09-15T11:36:54.0867295+05:30",
+    "last_updated":  "2026-09-15T13:08:30.7710902+05:30",
     "services":  [
                      {
                          "id":  "srv-sahaj-portal",
@@ -9258,6 +9258,15 @@
               ],
     "activity_logs":  [
                           {
+                              "id":  "log-2789b9f8",
+                              "timestamp":  "2026-09-15T13:08:30.7700891+05:30",
+                              "admin":  "SAKIL ALAM (Admin)",
+                              "action":  "Admin Login Successful",
+                              "item_type":  "Security",
+                              "item_title":  "Session Created",
+                              "details":  "Admin authenticated from IP: [::1]:51045"
+                          },
+                          {
                               "id":  "log-aa95781e",
                               "timestamp":  "2026-09-15T11:36:54.0867295+05:30",
                               "admin":  "SAKIL ALAM (Admin)",
@@ -11047,15 +11056,6 @@
                               "item_type":  "Security",
                               "item_title":  "Session Created",
                               "details":  "Admin authenticated from IP: [::1]:52639"
-                          },
-                          {
-                              "id":  "log-ac6ce594",
-                              "timestamp":  "2026-09-14T13:55:12.3539225+05:30",
-                              "admin":  "SAKIL ALAM (Admin)",
-                              "action":  "Admin Login Successful",
-                              "item_type":  "Security",
-                              "item_title":  "Session Created",
-                              "details":  "Admin authenticated from IP: [::1]:52559"
                           }
                       ],
     "settings":  {
