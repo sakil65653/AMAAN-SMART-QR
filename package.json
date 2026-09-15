@@ -1,0 +1,21 @@
+{
+  "name": "amaan-csc-center",
+  "version": "2.0.0",
+  "description": "AMAAN CSC CENTER - Complete Citizen Services Portal, Admin CMS, Member Hub, Tools, and Database",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "csc",
+    "portal",
+    "citizen-services",
+    "odisha",
+    "mo-seva-kendra"
+  ],
+  "author": "SAKIL ALAM",
+  "license": "ISC"
+}

@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: amaan-csc-center
+    env: node
+    plan: free
+    buildCommand: "echo 'Zero-dependency native build complete'"
+    startCommand: "node server.js"
+    envVars:
+      - key: PORT
+        value: 10000
