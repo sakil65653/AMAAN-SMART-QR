@@ -1,0 +1,324 @@
+/* AMAAN CSC CENTER - Custom Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Service Card Hover & Transitions */
+.service-card {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.service-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+}
+
+/* Drag and Drop Zone */
+.drop-zone {
+    border: 2px dashed #cbd5e1;
+    transition: all 0.2s ease;
+}
+
+.drop-zone.dragover {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+}
+
+/* Crop & Canvas Container */
+.crop-container {
+    position: relative;
+    overflow: hidden;
+    background: repeating-conic-gradient(#f1f5f9 0% 25%, #ffffff 0% 50%) 50% / 16px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Guide Overlays for Passport Specs */
+.guide-line {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.guide-center-vertical {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.guide-eye-level {
+    left: 0;
+    right: 0;
+    top: 42%;
+    height: 1px;
+    background-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.guide-head-boundary {
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 60%;
+    height: 65%;
+    border: 1.5px dashed rgba(16, 185, 129, 0.7);
+    border-radius: 50% 50% 45% 45%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.guide-shoulder-boundary {
+    position: absolute;
+    bottom: 0%;
+    left: 10%;
+    width: 80%;
+    height: 25%;
+    border-top: 1.5px dashed rgba(245, 158, 11, 0.7);
+    border-radius: 50% 50% 0 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Modal animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Print Specific Styles for Receipts & Sheets */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    #billModal:not(.hidden), #billModal:not(.hidden) * {
+        visibility: visible;
+    }
+
+    #docSlipModal:not(.hidden), #docSlipModal:not(.hidden) * {
+        visibility: visible;
+    }
+
+    .printable-receipt {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        background: white !important;
+        color: black !important;
+    }
+
+    .printable-doc-slip {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    #printCanvasContainer, #printCanvasContainer canvas {
+        visibility: visible;
+        position: absolute;
+        left: 0;
+        top: 0;
+        margin: 0;
+    }
+
+    .print\:hidden {
+        display: none !important;
+    }
+}
+
+/* ==========================================
+   DARK MODE OVERRIDES (HIGH CONTRAST & BRIGHT TYPOGRAPHY)
+   ========================================== */
+html.dark {
+    color-scheme: dark;
+}
+
+html.dark body {
+    background-color: #080d1a !important;
+    color: #f8fafc !important;
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-gray-50 {
+    background-color: #0f172a !important;
+}
+
+html.dark .bg-white {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+html.dark .border-slate-200,
+html.dark .border-gray-200,
+html.dark .border-gray-100,
+html.dark .border-slate-100 {
+    border-color: #334155 !important;
+}
+
+html.dark .border-slate-300,
+html.dark .border-gray-300 {
+    border-color: #475569 !important;
+}
+
+html.dark .text-slate-800,
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-slate-900,
+html.dark .text-blue-950 {
+    color: #ffffff !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-gray-700 {
+    color: #e2e8f0 !important;
+}
+
+html.dark .text-slate-600,
+html.dark .text-gray-600 {
+    color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-gray-500 {
+    color: #94a3b8 !important;
+}
+
+html.dark .text-blue-700 {
+    color: #60a5fa !important;
+}
+
+html.dark .text-emerald-700,
+html.dark .text-emerald-800 {
+    color: #34d399 !important;
+}
+
+html.dark .text-amber-700,
+html.dark .text-amber-800,
+html.dark .text-amber-900 {
+    color: #fbbf24 !important;
+}
+
+html.dark .bg-blue-50 {
+    background-color: #172554 !important;
+    border-color: #1e40af !important;
+}
+
+html.dark .bg-amber-50 {
+    background-color: #451a03 !important;
+    border-color: #78350f !important;
+}
+
+html.dark .bg-emerald-50 {
+    background-color: #064e3b !important;
+    border-color: #065f46 !important;
+}
+
+html.dark .bg-rose-50 {
+    background-color: #4c0519 !important;
+    border-color: #881337 !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea {
+    background-color: #0f172a !important;
+    border-color: #475569 !important;
+    color: #ffffff !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+html.dark .service-card {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+html.dark .service-card:hover {
+    box-shadow: 0 14px 25px -5px rgba(0, 0, 0, 0.6);
+    border-color: #3b82f6 !important;
+}
+
+html.dark .service-card .bg-gray-50 {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+html.dark .filter-btn:not(.active) {
+    background-color: #1e293b !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+html.dark .filter-btn:not(.active):hover {
+    background-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+html.dark #docSlipModal .bg-white,
+html.dark #billModal .bg-white,
+html.dark #enquiryModal .bg-white,
+html.dark #authModal .bg-white,
+html.dark #adminPanelModal .bg-white,
+html.dark #toolWorkspaceModal .bg-white {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+}
+
+html.dark #toolWorkspaceModal .bg-slate-50,
+html.dark #toolWorkspaceModal .bg-slate-100 {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+}
+
+html.dark #docSlipPrintArea {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+html.dark #docSlipPrintArea .bg-slate-50 {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+}
+
+/* Ensure printed pages remain clean black-on-white regardless of theme */
+@media print {
+    html.dark body {
+        background-color: white !important;
+        color: black !important;
+    }
+    html.dark .printable-doc-slip,
+    html.dark .printable-receipt {
+        background-color: white !important;
+        color: black !important;
+    }
+    html.dark .printable-doc-slip *,
+    html.dark .printable-receipt * {
+        color: black !important;
+        background-color: white !important;
+        border-color: #94a3b8 !important;
+    }
+}
+

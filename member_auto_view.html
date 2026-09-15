@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        // Set Member ABC credentials
+        localStorage.setItem('token', 'mem_abc_session_test');
+        localStorage.setItem('user', JSON.stringify({
+            username: 'member_abc',
+            name: 'Aman Kumar',
+            role: 'member',
+            center_id: 'CTR-PIPILI-01',
+            permissions: {
+                perm_govt_portal: true,
+                perm_odisha_yojana: false,
+                perm_ticket_insurance: false,
+                perm_printing_studio: true,
+                perm_application_forms: false,
+                perm_operator_videos: false
+            }
+        }));
+        window.location.href = 'http://localhost:5050/index.html';
+    </script>
+</head>
+<body>Redirecting to Member Portal...</body>
+</html>

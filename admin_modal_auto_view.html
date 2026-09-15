@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Auto Modal</title>
+</head>
+<body>
+    <script>
+        (async () => {
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: '9078' })
+                });
+                const d = await res.json();
+                if (d.success && d.token) {
+                    localStorage.setItem('amaan_admin_token', d.token);
+                    localStorage.setItem('amaan_csc_user', JSON.stringify(d.user));
+                    window.location.href = 'admin.html?autotab=ads&automodal=slot-1-image-ad';
+                } else {
+                    document.body.innerText = 'Login failed: ' + JSON.stringify(d);
+                }
+            } catch (e) {
+                document.body.innerText = 'Error: ' + e.message;
+            }
+        })();
+    </script>
+</body>
+</html>

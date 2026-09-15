@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en" class="notranslate" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
+    <title>Billing & Daily Accounting System - AMAAN Multi-Center Portal</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @media print {
+            body * { visibility: hidden !important; }
+            #printableSlip, #printableSlip * { visibility: visible !important; }
+            #printableSlip { position: absolute; left: 0; top: 0; width: 80mm; padding: 10px; margin: 0; background: #fff !important; color: #000 !important; }
+            #printableReport, #printableReport * { visibility: visible !important; }
+            #printableReport { position: absolute; left: 0; top: 0; width: 100%; padding: 15px; margin: 0; background: #fff !important; color: #000 !important; }
+            .no-print { display: none !important; }
+        }
+        .tab-btn.active {
+            background-color: #1e3a8a;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .badge-edited {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        .row-edited {
+            background-color: #fffbeb !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans text-slate-800">
+
+    <!-- LOGIN SCREEN OVERLAY (Shown when not authenticated) -->
+    <div id="loginScreen" class="fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 p-6 text-white text-center">
+                <img src="logo.png" alt="Logo" class="w-16 h-16 mx-auto mb-3 rounded-full bg-white p-1 shadow-md object-contain">
+                <h2 class="text-2xl font-black tracking-tight">AMAAN CSC PORTAL</h2>
+                <p class="text-blue-200 text-xs mt-1 uppercase tracking-wider font-semibold">Multi-Center Billing & Daily Accounting System</p>
+            </div>
+            
+            <div class="p-6 sm:p-8 space-y-5">
+                <div id="loginAlert" class="hidden p-3 rounded-lg text-sm font-medium"></div>
+
+                <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Username / Mobile</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-slate-400"></i>
+                            <input type="text" id="loginUsername" required placeholder="admin or member username" 
+                                class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">Password / PIN</label>
+                            <button type="button" onclick="openForgotPasswordModal()" class="text-[11px] font-bold text-blue-700 hover:text-blue-900 hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-key text-[10px]"></i>
+                                <span>Forgot Password / PIN?</span>
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3.5 top-3.5 text-slate-400"></i>
+                            <input type="password" id="loginPassword" required placeholder="Enter password / PIN" 
+                                class="w-full pl-10 pr-10 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-sm">
+                            <button type="button" onclick="toggleBillingPassVisibility('loginPassword', 'eyeBillingLogin')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700" title="Show/Hide Password">
+                                <i id="eyeBillingLogin" class="fa-solid fa-eye text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="loginBtn" onclick="handleLoginSubmit(event)"
+                        class="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-lg shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        <span>Sign In to System</span>
+                    </button>
+                </form>
+
+                <div class="pt-4 border-t border-slate-100 text-xs text-slate-500 space-y-2">
+                    <p class="font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info text-blue-600"></i> Demo & Quick Access Accounts:
+                    </p>
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <button type="button" onclick="fillLogin('admin', '9078')" class="p-2 bg-blue-50 hover:bg-blue-100 text-blue-900 rounded border border-blue-200 text-left">
+                            <span class="font-bold block">Admin Login</span>
+                            admin / 9078
+                        </button>
+                        <button type="button" onclick="fillLogin('member_abc', '1234')" class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 rounded border border-emerald-200 text-left">
+                            <span class="font-bold block">ABC Center Member</span>
+                            member_abc / 1234
+                        </button>
+                        <button type="button" onclick="fillLogin('member_xyz', '1234')" class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded border border-amber-200 text-left col-span-2">
+                            <span class="font-bold block">XYZ Center Member</span>
+                            member_xyz / 1234
+                        </button>
+                    </div>
+                </div>
+
+                <div class="text-center pt-2">
+                    <a href="index.html" class="text-xs text-slate-500 hover:text-blue-900 font-medium transition flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Public CSC Website
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION WRAPPER (Shown after login) -->
+    <div id="appContainer" class="flex flex-col min-h-screen">
+        
+        <!-- Top App Header -->
+        <header class="bg-blue-950 text-white border-b border-blue-900 sticky top-0 z-40 shadow">
+            <div class="max-w-7xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+                <!-- Brand & Center Info -->
+                <div class="flex items-center gap-3">
+                    <img src="logo.png" alt="Logo" class="w-10 h-10 rounded-full bg-white p-0.5 object-contain shadow-sm">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 id="topCenterName" class="text-base sm:text-lg font-black tracking-tight text-white leading-tight">AMAAN CSC CENTER</h1>
+                            <span id="roleBadge" class="px-2 py-0.5 text-[10px] font-extrabold uppercase rounded bg-blue-700 text-blue-100 border border-blue-600">Admin</span>
+                        </div>
+                        <p id="topCenterMeta" class="text-[11px] text-blue-200 truncate max-w-md">Pipili, Puri-752104 | +91 9078765653</p>
+                    </div>
+                </div>
+
+                <!-- Admin Center Filter & Live Clock & User Info -->
+                <div class="flex items-center gap-3 text-xs">
+                    <!-- Viewing Center Dropdown (Admin Only) -->
+                    <div id="adminCenterFilterWrapper" class="hidden flex items-center gap-1.5 bg-blue-900/80 px-2.5 py-1.5 rounded-lg border border-blue-800">
+                        <span class="text-[11px] text-blue-300 font-bold uppercase whitespace-nowrap"><i class="fa-solid fa-building"></i> Viewing Center:</span>
+                        <select id="adminCenterSelect" onchange="handleCenterSwitch(this.value)" 
+                            class="bg-blue-950 text-white font-semibold text-xs border border-blue-700 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-400">
+                            <option value="all">All Centers (Consolidated)</option>
+                        </select>
+                    </div>
+
+                    <!-- Live System 12-Hour Clock -->
+                    <div class="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-blue-900/50 rounded-lg border border-blue-800/80 text-blue-200">
+                        <i class="fa-regular fa-clock text-amber-400"></i>
+                        <span id="liveClock" class="font-mono font-bold tracking-wide">-- --- ---- --:-- --</span>
+                    </div>
+
+                    <!-- User Pill & Actions -->
+                    <div class="flex items-center gap-2">
+                        <div class="hidden sm:block text-right">
+                            <span id="topUserName" class="block font-bold text-white leading-tight">User</span>
+                            <span id="topCenterTag" class="block text-[10px] text-blue-300">Center</span>
+                        </div>
+                        <a href="index.html" title="Public Portal" class="p-2 bg-blue-900 hover:bg-blue-800 text-blue-200 hover:text-white rounded-lg transition">
+                            <i class="fa-solid fa-globe"></i>
+                        </a>
+                        <button onclick="openBillingChangePassModal()" title="Change Password / PIN" class="p-2 bg-amber-600/80 hover:bg-amber-600 text-white rounded-lg transition font-medium flex items-center gap-1">
+                            <i class="fa-solid fa-key"></i>
+                            <span class="hidden md:inline text-xs">Change PIN</span>
+                        </button>
+                        <button onclick="handleLogout()" id="headerBillingLogoutBtn" title="Logout" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl text-xs transition font-black flex items-center gap-1.5 shadow-sm border border-rose-500 cursor-pointer">
+                            <span class="text-sm font-black">↪</span>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs Bar -->
+        <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-[57px] z-30 overflow-x-auto scrollbar-thin">
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-1 py-1.5 text-xs whitespace-nowrap">
+                <button onclick="switchTab('dashboard')" id="tabNav-dashboard" class="tab-btn active px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-chart-pie text-blue-600"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('newEntry')" id="tabNav-newEntry" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-circle-plus text-emerald-600"></i>
+                    <span>New Income Entry</span>
+                </button>
+                <button onclick="switchTab('expenses')" id="tabNav-expenses" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-receipt text-rose-600"></i>
+                    <span>Expenses</span>
+                </button>
+                <button onclick="switchTab('todayRecords')" id="tabNav-todayRecords" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-list-check text-indigo-600"></i>
+                    <span>Today's Records</span>
+                </button>
+                <button onclick="switchTab('dailyHistory')" id="tabNav-dailyHistory" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-calendar-days text-amber-600"></i>
+                    <span>Daily History</span>
+                </button>
+                <button onclick="switchTab('monthlyReport')" id="tabNav-monthlyReport" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-chart-line text-cyan-600"></i>
+                    <span>Monthly Report</span>
+                </button>
+                <button onclick="switchTab('serviceReport')" id="tabNav-serviceReport" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-tags text-purple-600"></i>
+                    <span>Service Report</span>
+                </button>
+                <button onclick="switchTab('expenseReport')" id="tabNav-expenseReport" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-money-bill-transfer text-orange-600"></i>
+                    <span>Expense Report</span>
+                </button>
+                <button onclick="switchTab('auditLog')" id="tabNav-auditLog" class="tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-clock-rotate-left text-slate-600"></i>
+                    <span>Audit Log</span>
+                </button>
+
+                <!-- Admin Only Nav Items -->
+                <button onclick="switchTab('members')" id="tabNav-members" class="admin-only hidden tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-users-gear text-teal-600"></i>
+                    <span>Members</span>
+                </button>
+                <button onclick="switchTab('centers')" id="tabNav-centers" class="admin-only hidden tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-store text-sky-600"></i>
+                    <span>Centers</span>
+                </button>
+                <button onclick="switchTab('backupRestore')" id="tabNav-backupRestore" class="admin-only hidden tab-btn px-3 py-2 rounded-lg flex items-center gap-2 text-slate-700 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-database text-blue-600"></i>
+                    <span>Backup / Restore</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Body -->
+        <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="view-dashboard" class="tab-view space-y-6">
+                <!-- Center Banner / Notice -->
+                <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-xl p-5 text-white shadow-md flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <span class="text-xs uppercase tracking-widest text-blue-300 font-bold">Active Working Center</span>
+                        <h2 id="dashCenterTitle" class="text-xl sm:text-2xl font-black">AMAAN CSC CENTER</h2>
+                        <p id="dashCenterSubtitle" class="text-xs text-blue-200 mt-0.5">Main Road, In Front of Devigali, Pipili, Puri-752104</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="switchTab('newEntry')" class="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold text-xs shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>New Entry</span>
+                        </button>
+                        <button onclick="switchTab('expenses')" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-bold text-xs shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-minus"></i>
+                            <span>Add Expense</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Opening Balance Setup Bar (If not confirmed) -->
+                <div id="openingBalanceCard" class="bg-amber-50 border border-amber-300 rounded-xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 text-lg">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-amber-900">Today's Opening Cash Balance</h4>
+                            <p class="text-xs text-amber-700">Formula: <strong class="font-bold">Closing Balance = Opening Balance + Today's Income - Today's Expense</strong></p>
+                            <span class="text-[11px] text-amber-600 italic">*Opening & Closing Balances are purely cash reserves and are NOT counted as income.</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="relative">
+                            <span class="absolute left-3 top-2 text-slate-500 font-bold text-xs">₹</span>
+                            <input type="number" id="openingBalanceInput" min="0" step="1" placeholder="0" 
+                                class="w-32 pl-7 pr-3 py-1.5 rounded-lg border border-amber-400 bg-white text-sm font-bold text-slate-800">
+                        </div>
+                        <button onclick="saveOpeningBalance()" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shadow transition">
+                            Confirm Opening
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 KPI CARDS: Today's Income, Today's Expenses, Today's Net, Closing Balance -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Opening Balance KPI -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>Opening Balance</span>
+                            <i class="fa-solid fa-vault text-amber-600 text-lg"></i>
+                        </div>
+                        <div class="text-2xl font-black text-slate-800 font-mono">
+                            ₹ <span id="kpiOpeningBalance">0.00</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">Starting cash in drawer today</p>
+                    </div>
+
+                    <!-- Today's Income KPI -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>Today's Total Income</span>
+                            <i class="fa-solid fa-arrow-trend-up text-emerald-600 text-lg"></i>
+                        </div>
+                        <div class="text-2xl font-black text-emerald-600 font-mono">
+                            ₹ <span id="kpiTodayIncome">0.00</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1"><span id="kpiTodayCount">0</span> transactions completed</p>
+                    </div>
+
+                    <!-- Today's Expenses KPI -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>Today's Total Expenses</span>
+                            <i class="fa-solid fa-arrow-trend-down text-rose-600 text-lg"></i>
+                        </div>
+                        <div class="text-2xl font-black text-rose-600 font-mono">
+                            ₹ <span id="kpiTodayExpense">0.00</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 mt-1">Rent, paper, tea, repairs, etc.</p>
+                    </div>
+
+                    <!-- Today's Closing Balance KPI -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between text-slate-500 text-xs font-bold uppercase tracking-wider mb-2">
+                            <span>Today's Closing Balance</span>
+                            <i class="fa-solid fa-cash-register text-blue-600 text-lg"></i>
+                        </div>
+                        <div class="text-2xl font-black text-blue-900 font-mono">
+                            ₹ <span id="kpiClosingBalance">0.00</span>
+                        </div>
+                        <p class="text-[11px] text-blue-700 font-semibold mt-1">Opening + Income - Expense</p>
+                    </div>
+                </div>
+
+                <!-- Monthly Metrics & Consolidated Breakdown (if Admin viewing all) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Monthly Summary Card -->
+                    <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-slate-800 uppercase tracking-wider">Current Month Financials</h3>
+                            <span id="currentMonthLabel" class="text-xs font-mono font-bold text-blue-900 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Sep 2026</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-600 font-medium">Monthly Gross Income:</span>
+                                <span class="font-bold text-emerald-600 font-mono text-sm">₹ <span id="dashMonthIncome">0.00</span></span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-600 font-medium">Monthly Expenses:</span>
+                                <span class="font-bold text-rose-600 font-mono text-sm">₹ <span id="dashMonthExpense">0.00</span></span>
+                            </div>
+                            <div class="border-t border-slate-100 pt-2 flex justify-between items-center text-xs">
+                                <span class="font-bold text-slate-800">Monthly Net Profit:</span>
+                                <span class="font-black text-blue-900 font-mono text-base">₹ <span id="dashMonthNet">0.00</span></span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed border-t border-slate-100 pt-2">
+                            *Formula: <span class="font-bold">Monthly Net Income = Total Income - Total Expenses</span>.
+                        </p>
+                    </div>
+
+                    <!-- Center Breakdown Table (for Admin or Center performance) -->
+                    <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm text-slate-800 uppercase tracking-wider">Center Performance Summary</h3>
+                            <button onclick="loadDashboardData()" class="text-xs text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border border-slate-200 rounded-lg overflow-hidden">
+                                <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-2.5">Center Name</th>
+                                        <th class="p-2.5 text-right">Today's Income</th>
+                                        <th class="p-2.5 text-right">Today's Expense</th>
+                                        <th class="p-2.5 text-right">Today's Net</th>
+                                        <th class="p-2.5 text-right">Closing Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashCenterBreakdownTable" class="divide-y divide-slate-100 font-medium">
+                                    <tr>
+                                        <td colspan="5" class="p-4 text-center text-slate-400">Loading center metrics...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Feed & Fast Actions -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-slate-800 uppercase tracking-wider">Today's Latest Entries</h3>
+                        <button onclick="switchTab('todayRecords')" class="text-xs text-blue-700 hover:text-blue-900 font-bold">
+                            View All Today's Records →
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Time (12-Hr)</th>
+                                    <th class="p-2.5">Category</th>
+                                    <th class="p-2.5">Service Name</th>
+                                    <th class="p-2.5">Payment</th>
+                                    <th class="p-2.5 text-right">Amount</th>
+                                    <th class="p-2.5 text-center">Status</th>
+                                    <th class="p-2.5 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashRecentEntriesTable" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="7" class="p-4 text-center text-slate-400">No entries recorded yet today.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: NEW INCOME ENTRY FORM -->
+            <section id="view-newEntry" class="tab-view hidden space-y-6">
+                <div class="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-900 to-indigo-900 p-5 text-white flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-black flex items-center gap-2">
+                                <i class="fa-solid fa-circle-plus text-emerald-400"></i>
+                                <span>New Service Income Entry</span>
+                            </h2>
+                            <p class="text-xs text-blue-200 mt-0.5">Quick billing with automatic 12-hour AM/PM timestamp & zero customer info required</p>
+                        </div>
+                        <span id="formCenterBadge" class="px-2.5 py-1 rounded bg-blue-800/80 text-[11px] font-bold border border-blue-700">
+                            AMAAN CSC CENTER
+                        </span>
+                    </div>
+
+                    <form id="newEntryForm" onsubmit="handleNewEntrySubmit(event)" class="p-6 space-y-5">
+                        <div id="newEntryAlert" class="hidden p-3 rounded-lg text-sm font-medium"></div>
+
+                        <!-- Central Service Selection: Search / Select Dropdown -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                    Service Name [Search / Select ▼] <span class="text-rose-500">*</span>
+                                </label>
+                                <span id="serviceCountBadge" class="text-[11px] font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+                                    Loading services...
+                                </span>
+                            </div>
+
+                            <!-- Searchable Select Trigger Input & Dropdown -->
+                            <div class="relative" id="serviceSearchDropdownWrap">
+                                <!-- Trigger Button / Input Box -->
+                                <div onclick="toggleServiceDropdown()" id="serviceDropdownTrigger" 
+                                    class="w-full bg-slate-50 border border-slate-300 hover:border-blue-600 rounded-xl p-3 cursor-pointer flex items-center justify-between gap-3 shadow-sm transition">
+                                    <div class="flex items-center gap-2.5 overflow-hidden">
+                                        <div id="triggerCatIcon" class="w-8 h-8 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center shrink-0 text-xs font-bold">
+                                            <i class="fa-solid fa-list-check"></i>
+                                        </div>
+                                        <div class="truncate">
+                                            <div id="triggerServiceName" class="text-sm font-bold text-slate-800 truncate">Select or Search a Service...</div>
+                                            <div id="triggerServiceMeta" class="text-[11px] text-slate-500 truncate">Click to search across all central website services</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2 shrink-0">
+                                        <button type="button" id="clearServiceSelectionBtn" onclick="clearServiceSelection(event)" class="hidden text-slate-400 hover:text-rose-600 p-1" title="Clear selection">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </button>
+                                        <i id="dropdownChevron" class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform duration-200"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Floating Dropdown Panel -->
+                                <div id="serviceDropdownMenu" class="hidden absolute left-0 right-0 top-full mt-2 z-50 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-96 animate-in fade-in slide-in-from-top-2 duration-150">
+                                    <!-- Search Box & Filter Pills in Dropdown -->
+                                    <div class="p-3 bg-slate-50 border-b border-slate-200 space-y-2">
+                                        <div class="relative">
+                                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                                            <input type="text" id="serviceLiveSearchInput" oninput="handleServiceLiveSearch(this.value)" 
+                                                placeholder="Type to search (e.g. PAN, Photo, Certificate, Ration, FIR, Insurance)..." 
+                                                class="w-full pl-8 pr-7 py-2 bg-white rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-xs font-semibold">
+                                            <button type="button" onclick="clearSearchInput()" id="clearSearchInputBtn" class="hidden absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 text-xs">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Category Quick Filter Pills -->
+                                        <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-thin text-[11px] whitespace-nowrap" id="serviceCatPills">
+                                            <button type="button" onclick="filterServicesByCategory('all')" id="catPill-all" class="cat-pill active px-2.5 py-1 rounded-full font-bold bg-blue-900 text-white transition">All</button>
+                                            <button type="button" onclick="filterServicesByCategory('government')" id="catPill-government" class="cat-pill px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">Government</button>
+                                            <button type="button" onclick="filterServicesByCategory('yojana')" id="catPill-yojana" class="cat-pill px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">Schemes & Yojanas</button>
+                                            <button type="button" onclick="filterServicesByCategory('printing')" id="catPill-printing" class="cat-pill px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">Printing & Photo</button>
+                                            <button type="button" onclick="filterServicesByCategory('ticket')" id="catPill-ticket" class="cat-pill px-2.5 py-1 rounded-full font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">Ticketing & Insurance</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Service Items List (Grouped by Category) -->
+                                    <div id="serviceListContainer" class="overflow-y-auto p-2 divide-y divide-slate-100 flex-1 scrollbar-thin">
+                                        <!-- Populated dynamically via billing.js from central API -->
+                                    </div>
+
+                                    <!-- Bottom Action: + CUSTOM SERVICE -->
+                                    <div class="p-2.5 bg-slate-50 border-t border-slate-200">
+                                        <button type="button" onclick="selectCustomServiceMode()" 
+                                            class="w-full py-2 px-3 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-extrabold text-xs flex items-center justify-center gap-2 transition shadow-sm">
+                                            <i class="fa-solid fa-circle-plus text-amber-600"></i>
+                                            <span>+ CUSTOM SERVICE (Enter manually & optionally save to Catalog)</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Hidden Form Inputs to hold selected service data -->
+                            <input type="hidden" id="entryServiceId" value="">
+                            <input type="hidden" id="entryServiceName" value="" required>
+                            <input type="hidden" id="entryCategory" value="government">
+                        </div>
+
+                        <!-- Custom Service Entry Drawer (Shown when + CUSTOM SERVICE is selected) -->
+                        <div id="customServiceDrawer" class="hidden p-4 bg-amber-50/80 border border-amber-300 rounded-xl space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-black text-amber-900 flex items-center gap-1.5 uppercase">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Custom Service Entry
+                                </span>
+                                <button type="button" onclick="cancelCustomServiceMode()" class="text-slate-400 hover:text-slate-600 text-xs font-bold">
+                                    <i class="fa-solid fa-xmark"></i> Cancel Custom
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Custom Service Name <span class="text-rose-500">*</span></label>
+                                    <input type="text" id="customServiceNameInput" placeholder="e.g. Urgent Legal Affidavit Typing" 
+                                        class="w-full px-3 py-2 bg-white rounded-lg border border-amber-300 focus:ring-2 focus:ring-amber-500 text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Service Category</label>
+                                    <select id="customServiceCategorySelect" class="w-full px-3 py-2 bg-white rounded-lg border border-amber-300 text-xs font-semibold">
+                                        <option value="government">🏛️ Government Service</option>
+                                        <option value="yojana">📜 Scheme / Yojana</option>
+                                        <option value="printing">🖨️ Printing & Photo</option>
+                                        <option value="ticket">🎫 Ticketing & Insurance</option>
+                                        <option value="other">✨ Other / Miscellaneous</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+                                <label class="flex items-center gap-2 text-xs text-amber-900 font-bold cursor-pointer select-none">
+                                    <input type="checkbox" id="saveCustomToCatalog" class="rounded text-amber-600 focus:ring-amber-500">
+                                    <span>Save permanently to Central Services Catalog (Admin / Website Sync)</span>
+                                </label>
+                                <button type="button" onclick="applyCustomService()" class="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shadow">
+                                    Apply Custom Service
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Amount in ₹ (Starts BLANK initially) -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                Amount in ₹ (Blank Initially) <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-3.5 top-2.5 text-slate-500 font-bold text-sm">₹</span>
+                                <input type="number" id="entryAmount" required min="1" step="0.5" placeholder="0.00" value=""
+                                    class="w-full pl-8 pr-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-base font-mono font-bold text-emerald-700">
+                            </div>
+                        </div>
+
+                        <!-- Payment Mode & Remarks -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Payment Method
+                                </label>
+                                <select id="entryPaymentMode" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 text-sm font-semibold bg-white">
+                                    <option value="Cash">💵 Cash</option>
+                                    <option value="UPI / PhonePe / GPay">📱 UPI / QR Code</option>
+                                    <option value="Online / NetBanking">🌐 Online Transfer</option>
+                                    <option value="Other">✨ Other</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Remarks / Note (Optional)
+                                </label>
+                                <input type="text" id="entryNotes" placeholder="Optional notes (Zero customer PII)"
+                                    class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 text-sm">
+                            </div>
+                        </div>
+
+                        <!-- Automatic Timestamp Banner & Anti-Duplicate Button -->
+                        <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                            <div class="text-xs text-slate-500 flex items-center gap-1.5 font-mono">
+                                <i class="fa-regular fa-clock text-amber-600"></i>
+                                <span>Entry Time: <strong class="text-slate-700" id="entryLiveTime">dd MMM yyyy — hh:mm tt</strong></span>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <label class="flex items-center gap-1.5 text-xs text-slate-600 cursor-pointer select-none">
+                                    <input type="checkbox" id="autoPrintSlip" class="rounded text-blue-900 focus:ring-blue-500">
+                                    <span>Print Receipt Slip</span>
+                                </label>
+                                
+                                <button type="submit" id="saveEntryBtn"
+                                    class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold rounded-lg shadow-md transition flex items-center gap-2 text-sm disabled:opacity-50">
+                                    <i class="fa-solid fa-check"></i>
+                                    <span>Save & Record Entry</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 3: EXPENSES MANAGEMENT -->
+            <section id="view-expenses" class="tab-view hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Add Expense Form -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                        <div class="bg-gradient-to-r from-rose-900 to-red-800 p-4 text-white">
+                            <h3 class="font-black text-base flex items-center gap-2">
+                                <i class="fa-solid fa-receipt"></i>
+                                <span>Record Daily Expense</span>
+                            </h3>
+                            <p class="text-[11px] text-rose-200 mt-0.5">Shop maintenance, stationery, recharge, tea, rent</p>
+                        </div>
+
+                        <form id="expenseForm" onsubmit="handleExpenseSubmit(event)" class="p-5 space-y-4">
+                            <div id="expenseAlert" class="hidden p-3 rounded-lg text-sm font-medium"></div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Expense Category <span class="text-rose-500">*</span>
+                                </label>
+                                <select id="expenseCategory" onchange="onExpenseCategoryChange(this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold bg-white">
+                                    <option value="Shop Rent">🏪 Shop Rent</option>
+                                    <option value="Electricity Bill">⚡ Electricity Bill</option>
+                                    <option value="Paper & Stationery">📄 Paper & Stationery</option>
+                                    <option value="Internet / Wifi">📶 Internet / Wifi</option>
+                                    <option value="Machine Maintenance & Ink">🖨️ Machine Maintenance & Ink</option>
+                                    <option value="Staff Salary / Tea / Food">☕ Staff Salary / Tea / Food</option>
+                                    <option value="Misc / Other Expenses">📦 Misc / Other Expenses</option>
+                                    <option value="Custom Expense">✨ Custom Expense Category</option>
+                                </select>
+                            </div>
+
+                            <div id="customExpenseCatWrap" class="hidden">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Custom Category Name</label>
+                                <input type="text" id="customExpenseCatInput" placeholder="e.g. Courier Charges" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                    Amount in ₹ <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2 text-slate-500 font-bold text-sm">₹</span>
+                                    <input type="number" id="expenseAmount" required min="1" step="0.5" placeholder="Enter expense amount"
+                                        class="w-full pl-8 pr-3 py-2 rounded-lg border border-slate-300 font-mono font-bold text-rose-600 text-base">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Payment Method</label>
+                                <select id="expensePaymentMode" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                    <option value="Cash">Cash</option>
+                                    <option value="UPI">UPI / QR Code</option>
+                                    <option value="Bank Transfer">Bank Transfer</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Expense Description / Note</label>
+                                <input type="text" id="expenseNote" placeholder="e.g. 2 rim 75gsm A4 paper from market" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                            </div>
+
+                            <button type="submit" id="saveExpenseBtn"
+                                class="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-2 text-sm disabled:opacity-50">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Save Expense</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Today's Expenses List -->
+                    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                            <div>
+                                <h3 class="font-black text-base text-slate-800">Today's Recorded Expenses</h3>
+                                <p class="text-xs text-slate-500">Total Spent Today: <strong class="text-rose-600 font-mono font-black">₹ <span id="todayExpenseTotalBadge">0.00</span></strong></p>
+                            </div>
+                            <button onclick="loadExpenses()" class="text-xs text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                                <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-2.5">Time</th>
+                                        <th class="p-2.5">Category</th>
+                                        <th class="p-2.5">Description</th>
+                                        <th class="p-2.5">Payment</th>
+                                        <th class="p-2.5 text-right">Amount</th>
+                                        <th class="p-2.5 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expensesTableBody" class="divide-y divide-slate-100 font-medium">
+                                    <tr>
+                                        <td colspan="6" class="p-4 text-center text-slate-400">No expenses recorded today.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: TODAY'S RECORDS -->
+            <section id="view-todayRecords" class="tab-view hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-indigo-600"></i>
+                                <span>Today's Transactions Register</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Live updated income entries with full edit history audit protection</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="printDailySummary()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-print"></i> Print Today's Sheet
+                            </button>
+                            <button onclick="loadTodayRecords()" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-900 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-blue-200">
+                                <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Controls -->
+                    <div class="flex flex-wrap items-center gap-3 text-xs bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-slate-600">Category:</span>
+                            <select id="todayFilterCategory" onchange="filterTodayTable()" class="px-2 py-1 rounded border border-slate-300 bg-white">
+                                <option value="">All Categories</option>
+                                <option value="Pan Card">Pan Card</option>
+                                <option value="Aadhaar Services">Aadhaar Services</option>
+                                <option value="Passport">Passport</option>
+                                <option value="Printing & Xerox">Printing & Xerox</option>
+                                <option value="Online Forms & Job Apply">Online Forms & Job Apply</option>
+                                <option value="Custom Service">Custom Service</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-slate-600">Payment:</span>
+                            <select id="todayFilterPayment" onchange="filterTodayTable()" class="px-2 py-1 rounded border border-slate-300 bg-white">
+                                <option value="">All Payments</option>
+                                <option value="Cash">Cash</option>
+                                <option value="UPI">UPI</option>
+                                <option value="Online">Online</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-1.5 ml-auto">
+                            <span class="text-slate-500">Search:</span>
+                            <input type="text" id="todaySearchInput" onkeyup="filterTodayTable()" placeholder="Search service / note..." 
+                                class="px-2.5 py-1 rounded border border-slate-300 bg-white text-xs w-48">
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Time (12-Hr)</th>
+                                    <th class="p-2.5">Category</th>
+                                    <th class="p-2.5">Service Name</th>
+                                    <th class="p-2.5">Payment</th>
+                                    <th class="p-2.5 text-right">Amount</th>
+                                    <th class="p-2.5 text-center">Status</th>
+                                    <th class="p-2.5 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="todayRecordsTableBody" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="7" class="p-6 text-center text-slate-400">Loading today's transactions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: DAILY HISTORY -->
+            <section id="view-dailyHistory" class="tab-view hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-amber-600"></i>
+                                <span>Daily Accounting & Closing Register</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Pick any past date to inspect opening balance, income, expenses, closing balance, and records</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="date" id="historyDateInput" onchange="loadHistoryForDate(this.value)" 
+                                class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 bg-white">
+                            <button onclick="printHistoryReport()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-print"></i> Print Register
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Date Summary Box -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="p-4 bg-amber-50 rounded-xl border border-amber-200">
+                            <span class="text-[11px] font-bold text-amber-800 uppercase block">Opening Balance</span>
+                            <span class="text-xl font-black text-amber-900 font-mono">₹ <span id="histOpeningBalance">0.00</span></span>
+                        </div>
+                        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+                            <span class="text-[11px] font-bold text-emerald-800 uppercase block">Total Income</span>
+                            <span class="text-xl font-black text-emerald-700 font-mono">₹ <span id="histTotalIncome">0.00</span></span>
+                        </div>
+                        <div class="p-4 bg-rose-50 rounded-xl border border-rose-200">
+                            <span class="text-[11px] font-bold text-rose-800 uppercase block">Total Expenses</span>
+                            <span class="text-xl font-black text-rose-700 font-mono">₹ <span id="histTotalExpense">0.00</span></span>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                            <span class="text-[11px] font-bold text-blue-800 uppercase block">Closing Cash Balance</span>
+                            <span class="text-xl font-black text-blue-900 font-mono">₹ <span id="histClosingBalance">0.00</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Transactions of selected date -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Entries for Selected Date:</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                                <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-2.5">Time</th>
+                                        <th class="p-2.5">Category</th>
+                                        <th class="p-2.5">Service Name</th>
+                                        <th class="p-2.5">Payment</th>
+                                        <th class="p-2.5 text-right">Amount</th>
+                                        <th class="p-2.5 text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTableBody" class="divide-y divide-slate-100 font-medium">
+                                    <tr>
+                                        <td colspan="6" class="p-4 text-center text-slate-400">Select a date to view entries.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: MONTHLY REPORT -->
+            <section id="view-monthlyReport" class="tab-view hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-line text-cyan-600"></i>
+                                <span>Monthly Financial & P&L Statement</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Formula: <strong class="font-bold text-slate-700">Monthly Net Income = Total Income - Total Expenses</strong></p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="month" id="monthlyReportPicker" onchange="loadMonthlyReport(this.value)"
+                                class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-bold text-slate-800 bg-white">
+                            <button onclick="printMonthlyReport()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-print"></i> Print Statement
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3 Cards: Gross Income, Total Expenses, Net Profit -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="p-5 bg-emerald-50 rounded-xl border border-emerald-200">
+                            <span class="text-xs font-bold text-emerald-800 uppercase block">Monthly Gross Income</span>
+                            <div class="text-2xl font-black text-emerald-700 font-mono mt-1">₹ <span id="monthGrossIncome">0.00</span></div>
+                            <span class="text-[11px] text-emerald-600">Total customer service collections</span>
+                        </div>
+                        <div class="p-5 bg-rose-50 rounded-xl border border-rose-200">
+                            <span class="text-xs font-bold text-rose-800 uppercase block">Monthly Total Expenses</span>
+                            <div class="text-2xl font-black text-rose-700 font-mono mt-1">₹ <span id="monthTotalExpense">0.00</span></div>
+                            <span class="text-[11px] text-rose-600">Rent, electricity, supplies, salaries</span>
+                        </div>
+                        <div class="p-5 bg-blue-50 rounded-xl border border-blue-200">
+                            <span class="text-xs font-bold text-blue-800 uppercase block">Monthly Net Income / Profit</span>
+                            <div class="text-2xl font-black text-blue-900 font-mono mt-1">₹ <span id="monthNetIncome">0.00</span></div>
+                            <span class="text-[11px] text-blue-600">Net Profit (Income - Expense)</span>
+                        </div>
+                    </div>
+
+                    <!-- Daily Performance Breakdown in Selected Month -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider">Day-by-Day Financial Breakdown:</h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                                <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-2.5">Date</th>
+                                        <th class="p-2.5 text-right">Day Income</th>
+                                        <th class="p-2.5 text-right">Day Expenses</th>
+                                        <th class="p-2.5 text-right">Day Net</th>
+                                        <th class="p-2.5 text-center">Entries</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monthBreakdownTableBody" class="divide-y divide-slate-100 font-medium">
+                                    <tr>
+                                        <td colspan="5" class="p-4 text-center text-slate-400">Loading monthly breakdown...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: SERVICE REPORT -->
+            <section id="view-serviceReport" class="tab-view hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-tags text-purple-600"></i>
+                                <span>Service-wise Analytics & Ranking</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">View performance, revenue generated, and total orders per service</p>
+                        </div>
+                        <button onclick="loadServiceReport()" class="px-3 py-1.5 bg-blue-50 text-blue-900 rounded-lg text-xs font-bold border border-blue-200">
+                            <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">#</th>
+                                    <th class="p-2.5">Service Name</th>
+                                    <th class="p-2.5 text-center">Transactions Count</th>
+                                    <th class="p-2.5 text-right">Total Revenue (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serviceReportTableBody" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="4" class="p-4 text-center text-slate-400">Loading service analytics...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 8: EXPENSE REPORT -->
+            <section id="view-expenseReport" class="tab-view hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-money-bill-transfer text-orange-600"></i>
+                                <span>Expense-wise Breakdown</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Analysis of operational expenses across categories</p>
+                        </div>
+                        <button onclick="loadExpenseReport()" class="px-3 py-1.5 bg-rose-50 text-rose-900 rounded-lg text-xs font-bold border border-rose-200">
+                            <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">#</th>
+                                    <th class="p-2.5">Expense Category</th>
+                                    <th class="p-2.5 text-center">Count</th>
+                                    <th class="p-2.5 text-right">Total Expense (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseReportTableBody" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="4" class="p-4 text-center text-slate-400">Loading expense analytics...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 9: AUDIT LOG -->
+            <section id="view-auditLog" class="tab-view hidden space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-600"></i>
+                                <span>Audit Trail & Edit History</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Every modification preserves the original creation time, records editor details, and stores old vs new amounts</p>
+                        </div>
+                        <button onclick="loadAuditHistory()" class="px-3 py-1.5 bg-slate-100 text-slate-800 rounded-lg text-xs font-bold border border-slate-300">
+                            <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Edited At</th>
+                                    <th class="p-2.5">Edited By</th>
+                                    <th class="p-2.5">Center</th>
+                                    <th class="p-2.5">Entity</th>
+                                    <th class="p-2.5">Field</th>
+                                    <th class="p-2.5 text-right">Old Value</th>
+                                    <th class="p-2.5 text-right">New Value</th>
+                                    <th class="p-2.5">Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditHistoryTableBody" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="8" class="p-4 text-center text-slate-400">No edits recorded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 10: MEMBER MANAGEMENT (Admin Only) -->
+            <section id="view-members" class="admin-only hidden tab-view space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-users-gear text-teal-600"></i>
+                                <span>Multi-Center Member Management</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Create operator / member logins and bind them strictly to their authorized center</p>
+                        </div>
+                        <button onclick="openAddMemberModal()" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-user-plus"></i> Add New Member
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Name</th>
+                                    <th class="p-2.5">Username</th>
+                                    <th class="p-2.5">Assigned Center</th>
+                                    <th class="p-2.5">Role</th>
+                                    <th class="p-2.5">Status</th>
+                                    <th class="p-2.5 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="membersTableBody" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="6" class="p-4 text-center text-slate-400">Loading members...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 11: CENTER MANAGEMENT (Admin Only) -->
+            <section id="view-centers" class="admin-only hidden tab-view space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-store text-sky-600"></i>
+                                <span>Franchise & Center Outlets</span>
+                            </h2>
+                            <p class="text-xs text-slate-500">Manage all registered CSC branches, addresses, contact details</p>
+                        </div>
+                        <button onclick="openAddCenterModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow">
+                            <i class="fa-solid fa-circle-plus"></i> Add New Center
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+                            <thead class="bg-slate-50 text-slate-700 uppercase font-bold text-[11px] border-b border-slate-200">
+                                <tr>
+                                    <th class="p-2.5">Center ID</th>
+                                    <th class="p-2.5">Center Name</th>
+                                    <th class="p-2.5">Address</th>
+                                    <th class="p-2.5">Contact Phone</th>
+                                    <th class="p-2.5">Email</th>
+                                    <th class="p-2.5 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="centersTableBody" class="divide-y divide-slate-100 font-medium">
+                                <tr>
+                                    <td colspan="6" class="p-4 text-center text-slate-400">Loading centers...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 12: BACKUP & RESTORE (Admin Only) -->
+            <section id="view-backupRestore" class="admin-only hidden tab-view space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-md p-5 space-y-5">
+                    <div class="border-b border-slate-100 pb-3">
+                        <h2 class="text-lg font-black text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-database text-blue-600"></i>
+                            <span>Database Backup & Restore</span>
+                        </h2>
+                        <p class="text-xs text-slate-500">Safely backup all billing transactions, expenses, opening balances, audit logs, and accounts</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Backup Box -->
+                        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
+                            <h4 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-download text-emerald-600"></i>
+                                <span>Export Full Billing Backup</span>
+                            </h4>
+                            <p class="text-xs text-slate-500">Download a complete JSON backup of the entire billing & daily accounting database.</p>
+                            <button onclick="downloadBillingBackup()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow flex items-center gap-2">
+                                <i class="fa-solid fa-file-arrow-down"></i> Download JSON Backup
+                            </button>
+                        </div>
+
+                        <!-- Restore Box -->
+                        <div class="p-5 rounded-xl border border-rose-200 bg-rose-50 space-y-3">
+                            <h4 class="font-bold text-sm text-rose-900 flex items-center gap-2">
+                                <i class="fa-solid fa-upload text-rose-600"></i>
+                                <span>Restore From Backup</span>
+                            </h4>
+                            <p class="text-xs text-rose-700">Select a previously exported billing JSON file to restore the entire database.</p>
+                            <input type="file" id="restoreFileInput" accept=".json" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-rose-600 file:text-white hover:file:bg-rose-700 cursor-pointer">
+                            <button onclick="restoreBillingBackup()" class="px-5 py-2 bg-rose-800 hover:bg-rose-900 text-white rounded-lg text-xs font-bold shadow flex items-center gap-2">
+                                <i class="fa-solid fa-rotate-left"></i> Restore Database
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- EDIT TRANSACTION MODAL -->
+    <div id="editTxnModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full overflow-hidden">
+            <div class="bg-blue-900 p-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>Edit Transaction (Preserves Original Creation Time)</span>
+                </h3>
+                <button onclick="closeEditModal()" class="text-blue-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="editTxnForm" onsubmit="handleEditSubmit(event)" class="p-5 space-y-4">
+                <input type="hidden" id="editTxnId">
+                <div class="text-xs text-slate-500 bg-amber-50 p-2.5 rounded border border-amber-200">
+                    <span class="font-bold text-amber-900">Note:</span> Original creation time will be preserved. This modification will be recorded in the <strong class="text-amber-900">Audit History</strong> and flagged with an <span class="badge-edited px-1.5 py-0.5 rounded text-[10px] font-bold">EDITED</span> badge.
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Service Name</label>
+                    <input type="text" id="editServiceName" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Amount in ₹</label>
+                    <input type="number" id="editAmount" required min="1" step="0.5" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-base font-bold font-mono text-emerald-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Payment Method</label>
+                    <select id="editPaymentMode" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                        <option value="Cash">Cash</option>
+                        <option value="UPI / PhonePe / GPay">UPI / PhonePe / GPay</option>
+                        <option value="Online / NetBanking">Online / NetBanking</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Edit Reason / Note</label>
+                    <input type="text" id="editReason" placeholder="Why is this entry being edited?" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-blue-900 hover:bg-blue-800 text-white rounded-lg text-xs font-bold shadow">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD MEMBER MODAL (Admin) -->
+    <div id="addMemberModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden">
+            <div class="bg-teal-800 p-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Add New Center Member</h3>
+                <button onclick="closeAddMemberModal()" class="text-teal-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="addMemberForm" onsubmit="handleAddMemberSubmit(event)" class="p-5 space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Full Name</label>
+                    <input type="text" id="newMemberName" required placeholder="e.g. Rahul Sharma" class="w-full px-3 py-2 rounded border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Username (Login ID)</label>
+                    <input type="text" id="newMemberUsername" required placeholder="e.g. member_rahul" class="w-full px-3 py-2 rounded border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Password / PIN</label>
+                    <input type="password" id="newMemberPassword" required placeholder="e.g. 1234" class="w-full px-3 py-2 rounded border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Assign Center</label>
+                    <select id="newMemberCenterSelect" required class="w-full px-3 py-2 rounded border border-slate-300 bg-white"></select>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Role</label>
+                    <select id="newMemberRole" class="w-full px-3 py-2 rounded border border-slate-300 bg-white">
+                        <option value="member">Center Member / Operator (Restricted to Center)</option>
+                        <option value="admin">System Administrator (Full Access)</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeAddMemberModal()" class="px-3 py-2 bg-slate-100 text-slate-700 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-700 text-white rounded font-bold shadow">Create Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD CENTER MODAL (Admin) -->
+    <div id="addCenterModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden">
+            <div class="bg-sky-800 p-4 text-white flex items-center justify-between">
+                <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-store"></i> Add New CSC Center / Outlet</h3>
+                <button onclick="closeAddCenterModal()" class="text-sky-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="addCenterForm" onsubmit="handleAddCenterSubmit(event)" class="p-5 space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Center ID</label>
+                    <input type="text" id="newCenterId" required placeholder="e.g. CTR_NEW_CENTER" class="w-full px-3 py-2 rounded border border-slate-300 font-mono uppercase">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Center Name</label>
+                    <input type="text" id="newCenterName" required placeholder="e.g. NEW ONLINE SEWA KENDRA" class="w-full px-3 py-2 rounded border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Full Address</label>
+                    <input type="text" id="newCenterAddress" required placeholder="Market Road, Pipili" class="w-full px-3 py-2 rounded border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Mobile Number</label>
+                    <input type="text" id="newCenterMobile" required placeholder="9078765653" class="w-full px-3 py-2 rounded border border-slate-300">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Email (Optional)</label>
+                    <input type="email" id="newCenterEmail" placeholder="center@gmail.com" class="w-full px-3 py-2 rounded border border-slate-300">
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeAddCenterModal()" class="px-3 py-2 bg-slate-100 text-slate-700 rounded font-bold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-sky-700 text-white rounded font-bold shadow">Create Center</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSWORD / PIN MODAL -->
+    <div id="billingChangePassModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-base">Change Password / PIN</h3>
+                        <p class="text-xs text-slate-500">Update your account login password</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeBillingChangePassModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="billingChangePassForm" onsubmit="handleBillingChangePassSubmit(event)" class="space-y-4 pt-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Current Password / PIN</label>
+                    <div class="relative">
+                        <input type="password" id="billingCurrentPass" required placeholder="Enter current PIN"
+                            class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <button type="button" onclick="toggleBillingPassVisibility('billingCurrentPass', 'eyeBillingCurr')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700">
+                            <i id="eyeBillingCurr" class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">New Password / PIN</label>
+                    <div class="relative">
+                        <input type="password" id="billingNewPass" required minlength="4" placeholder="Enter new PIN (min 4 chars)"
+                            class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <button type="button" onclick="toggleBillingPassVisibility('billingNewPass', 'eyeBillingNew')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700">
+                            <i id="eyeBillingNew" class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Confirm New Password / PIN</label>
+                    <div class="relative">
+                        <input type="password" id="billingConfirmPass" required minlength="4" placeholder="Re-enter new PIN"
+                            class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <button type="button" onclick="toggleBillingPassVisibility('billingConfirmPass', 'eyeBillingConf')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700">
+                            <i id="eyeBillingConf" class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeBillingChangePassModal()" class="px-3 py-2 bg-slate-100 text-slate-700 rounded-lg font-bold text-xs hover:bg-slate-200">Cancel</button>
+                    <button type="submit" id="billingChangePassBtn" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs shadow flex items-center gap-1.5">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Update Password</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PRINTABLE 80MM RECEIPT SLIP -->
+    <div id="printableSlip" class="hidden">
+        <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 6px; margin-bottom: 8px;">
+            <h2 id="slipCenterName" style="font-size: 16px; font-weight: bold; margin: 0;">AMAAN CSC CENTER</h2>
+            <p id="slipCenterAddress" style="font-size: 10px; margin: 2px 0;">Pipili, Puri-752104</p>
+            <p id="slipCenterContact" style="font-size: 10px; margin: 2px 0;">Mob: 9078765653</p>
+            <p style="font-size: 9px; font-weight: bold; margin-top: 4px; text-transform: uppercase;">Payment Receipt</p>
+        </div>
+        <table style="width: 100%; font-size: 11px; margin-bottom: 8px;">
+            <tr>
+                <td style="color: #444;">Receipt No:</td>
+                <td id="slipTxnId" style="text-align: right; font-weight: bold; font-family: monospace;">--</td>
+            </tr>
+            <tr>
+                <td style="color: #444;">Date & Time:</td>
+                <td id="slipTimestamp" style="text-align: right; font-weight: bold;">--</td>
+            </tr>
+            <tr>
+                <td style="color: #444;">Category:</td>
+                <td id="slipCategory" style="text-align: right;">--</td>
+            </tr>
+            <tr>
+                <td style="color: #444;">Payment:</td>
+                <td id="slipPaymentMode" style="text-align: right;">Cash</td>
+            </tr>
+        </table>
+        <div style="border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 6px 0; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px;">
+                <span id="slipServiceName">Service</span>
+                <span id="slipAmount" style="font-family: monospace;">₹ 0.00</span>
+            </div>
+        </div>
+        <div style="text-align: center; font-size: 10px; color: #333;">
+            <p style="margin: 2px 0;">Thank you for visiting!</p>
+            <p style="font-size: 9px; color: #666; margin: 2px 0;">CSC e-Governance Digital Seva</p>
+        </div>
+    </div>
+
+    <!-- FORGOT / RESET PASSWORD MODAL -->
+    <div id="forgotPasswordModal" class="hidden fixed inset-0 z-[60] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 p-5 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-amber-300 text-lg border border-white/15 shadow-inner">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-base tracking-tight">Reset Password / PIN</h3>
+                        <p class="text-[11px] text-blue-200">Admin & Center Members Account Recovery</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeForgotPasswordModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4">
+                <!-- Alert Box -->
+                <div id="forgotAlert" class="hidden p-3 rounded-lg text-xs font-bold"></div>
+
+                <form id="forgotPassForm" onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                            Username / Account Name <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                            <input type="text" id="forgotUsername" required placeholder="e.g. member_abc, member_xyz, admin"
+                                class="w-full pl-10 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                Master Admin PIN / Code <span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-[10px] text-slate-500 font-semibold">(Default PIN: 9078)</span>
+                        </div>
+                        <div class="relative">
+                            <i class="fa-solid fa-shield-halved absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                            <input type="password" id="forgotMasterPin" required placeholder="Enter Master PIN (9078)"
+                                class="w-full pl-10 pr-10 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600">
+                            <button type="button" onclick="toggleBillingPassVisibility('forgotMasterPin', 'eyeForgotMaster')" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-700">
+                                <i id="eyeForgotMaster" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                New Password <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="password" id="forgotNewPassword" required placeholder="New PIN"
+                                    class="w-full pl-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600">
+                                <button type="button" onclick="toggleBillingPassVisibility('forgotNewPassword', 'eyeForgotNew')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-700">
+                                    <i id="eyeForgotNew" class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                                Confirm PIN <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <input type="password" id="forgotConfirmPassword" required placeholder="Repeat PIN"
+                                    class="w-full pl-3 pr-8 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-600 focus:border-blue-600">
+                                <button type="button" onclick="toggleBillingPassVisibility('forgotConfirmPassword', 'eyeForgotConfirm')" class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-slate-400 hover:text-slate-700">
+                                    <i id="eyeForgotConfirm" class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="forgotSubmitBtn"
+                        class="w-full py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-2 text-xs mt-1">
+                        <i class="fa-solid fa-unlock-keyhole"></i>
+                        <span>Reset & Update Password</span>
+                    </button>
+                </form>
+
+                <!-- Alternative: Contact Master Admin -->
+                <div class="border-t border-slate-100 pt-3 space-y-2">
+                    <p class="text-[11px] font-bold text-slate-600 flex items-center gap-1">
+                        <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i> Don't have Master PIN? Contact Admin:
+                    </p>
+                    <div class="flex gap-2">
+                        <a id="forgotWhatsAppBtn" href="https://wa.me/919078765653?text=Hello%20Admin,%20please%20reset%20my%20Billing%20Portal%20password." target="_blank"
+                            class="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition text-center text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-brands fa-whatsapp"></i> WhatsApp Admin
+                        </a>
+                        <a href="tel:9078765653"
+                            class="py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition text-center text-xs flex items-center justify-center gap-1 border border-slate-300">
+                            <i class="fa-solid fa-phone"></i> 9078765653
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRINTABLE STATEMENT / REPORT -->
+    <div id="printableReport" class="hidden">
+        <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px;">
+            <h1 id="repCenterName" style="font-size: 20px; font-weight: bold; margin: 0;">AMAAN CSC CENTER</h1>
+            <p id="repCenterMeta" style="font-size: 11px; margin: 3px 0;">Main Road, Pipili | Contact: 9078765653</p>
+            <h3 id="repTitle" style="font-size: 14px; margin-top: 5px; text-transform: uppercase;">Daily Financial Register</h3>
+            <p id="repDate" style="font-size: 11px; color: #555;">Generated: --</p>
+        </div>
+        <div id="repContent"></div>
+    </div>
+
+    <script src="services.js"></script>
+    <script src="billing.js"></script>
+</body>
+</html>

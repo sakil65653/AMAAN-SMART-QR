@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" class="notranslate" translate="no">
+<head>
+ <meta name="google" content="notranslate">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Indian Passport Photo Maker - AMAAN CSC CENTER</title>
+ <link rel="icon" type="image/png" href="favicon.png">
+ <link rel="apple-touch-icon" href="logo.png">
+ <script src="https://cdn.tailwindcss.com"></script>
+ <link rel="stylesheet" href="styles.css">
+ <!-- Cropper.js for image cropping -->
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+ <!-- MediaPipe Selfie Segmentation for AI Person Background Removal -->
+ <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col text-slate-800">
+
+ <!-- Header -->
+ <header class="bg-blue-950 text-white shadow-md sticky top-0 z-30 border-b border-blue-900">
+ <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+ <div class="flex items-center gap-3">
+ <a href="index.html" class="shrink-0 group flex items-center" title="AMAAN CSC CENTER">
+ <img src="logo.png" alt="AMAAN CSC CENTER Official Logo" class="w-11 h-11 object-contain rounded-full shadow border-2 border-amber-400 bg-white p-0.5 group-hover:scale-105 transition">
+ </a>
+ <div>
+ <h1 class="text-xl md:text-2xl font-black tracking-tight flex items-center gap-2">
+ INDIAN PASSPORT PHOTO MAKER
+ <span class="text-xs bg-emerald-500 text-white px-2 py-0.5 rounded font-bold uppercase tracking-normal">Studio Pro</span>
+ </h1>
+ <p class="text-xs text-blue-300">AMAAN CSC CENTER - Main Road, In Front of Devigali, Pipili, Puri, Odisha</p>
+ </div>
+ </div>
+
+ <div class="flex items-center gap-2">
+ <button onclick="toggleTheme()" id="themeToggleBtn" class="bg-blue-800/80 hover:bg-blue-700 text-amber-300 p-1.5 rounded-lg text-xs border border-blue-700 transition flex items-center gap-1" title="Toggle Light / Dark Mode">
+ <span id="themeToggleIcon"> - </span>
+ </button>
+ <!-- Billing & Accounting Portal Button -->
+ <a href="billing.html" class="bg-amber-500 hover:bg-amber-600 text-slate-950 px-3.5 py-1.5 rounded-lg font-bold text-xs shadow flex items-center gap-1.5 transition border border-amber-400" title="Open Multi-Center Billing & Daily Accounting Software">
+ <span>💰</span>
+ <span>Billing & Accounts</span>
+ </a>
+ <a href="tools.html" class="bg-amber-400 hover:bg-amber-500 text-slate-950 px-3.5 py-1.5 rounded-lg font-black text-xs shadow flex items-center gap-1 transition">
+ <span> - </span>
+ <span>50 Tools</span>
+ </a>
+ <a href="index.html" class="bg-blue-800 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 transition">
+ - Back to Services
+ </a>
+ </div>
+ </div>
+ </header>
+
+ <!-- Master Prompt Standard Compliance Banner -->
+ <div class="bg-emerald-50 border-b border-emerald-200 px-4 py-2.5 text-xs text-emerald-950">
+ <div class="container mx-auto flex flex-wrap justify-between items-center gap-2">
+ <div class="flex items-center gap-2">
+ <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+ <span class="font-bold">Official Passport Specification Standard Active:</span>
+ <span class="text-emerald-800">Pure White Background (#FFFFFF) - Centered Head - Neutral Expression - Soft Front Studio Light - No Harsh Shadows - Sharp Open Eyes - Natural Skin Texture (No Whitening/Beauty Filters) - Crisp Edges</span>
+ </div>
+ <span class="text-emerald-700 font-mono text-[11px] font-bold bg-white px-2 py-0.5 rounded border border-emerald-200">AMAAN CSC PIPILI - +91 9078765653</span>
+ </div>
+ </div>
+
+ <!-- Main Workspace (3-Column Desktop Layout / Responsive) -->
+ <main class="container mx-auto px-4 py-6 flex-grow">
+ <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+ <!-- ========================================== -->
+ <!-- LEFT COLUMN: Step 1 Upload & Verification (Col 1-3) -->
+ <!-- ========================================== -->
+ <div class="lg:col-span-3 space-y-4">
+ <!-- STEP 1: Upload Card -->
+ <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+ <div class="flex justify-between items-center border-b pb-2 mb-3">
+ <h2 class="text-sm font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+ <span class="w-5 h-5 rounded-full bg-blue-900 text-white inline-flex items-center justify-center text-xs">1</span>
+ <span>Upload Photo</span>
+ </h2>
+ <button id="btnResetAll" class="text-xs text-rose-600 hover:underline font-semibold" title="Reset all changes">Reset</button>
+ </div>
+
+ <div id="dropZone" class="drop-zone p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer bg-slate-50 hover:bg-blue-50 transition min-h-[170px] text-center border-2 border-dashed border-blue-300">
+ <svg class="w-10 h-10 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+ <p class="text-xs font-bold text-slate-800">Click or Drag & Drop Photo Here</p>
+ <p class="text-[11px] text-slate-500 mt-1">Supports JPG, JPEG, PNG, WEBP</p>
+ <p class="text-[10px] text-blue-700 font-bold mt-2 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Auto Center & Studio Clean on Upload</p>
+ <input type="file" id="fileInput" class="hidden" accept="image/jpeg, image/png, image/webp">
+ </div>
+
+ <!-- Upload Action Buttons -->
+ <div class="mt-3 flex gap-2">
+ <button id="btnReplace" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 py-2 rounded-lg text-xs font-bold border border-slate-300 hidden">
+ Replace Photo
+ </button>
+ <button id="btnRemove" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-700 py-2 rounded-lg text-xs font-bold border border-rose-200 hidden">
+ Remove Photo
+ </button>
+ </div>
+ </div>
+
+ <!-- Pre-Export Validation Checklist -->
+ <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+ <h3 class="text-xs font-black text-slate-800 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+ <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+ <span>Passport Photo Validation</span>
+ </h3>
+ <ul class="space-y-1.5 text-xs text-slate-700" id="validationChecklist">
+ <li class="flex items-center gap-2" id="vCheckPhoto"><span class="text-slate-400"> - </span> <span>Photo loaded</span></li>
+ <li class="flex items-center gap-2" id="vCheckBg"><span class="text-slate-400"> - </span> <span>Background selected</span></li>
+ <li class="flex items-center gap-2" id="vCheckDim"><span class="text-slate-400"> - </span> <span>Photo dimensions verified</span></li>
+ <li class="flex items-center gap-2" id="vCheckDpi"><span class="text-slate-400"> - </span> <span>DPI standard configured</span></li>
+ <li class="flex items-center gap-2" id="vCheckPaper"><span class="text-slate-400"> - </span> <span>Paper size configured</span></li>
+ <li class="flex items-center gap-2" id="vCheckCopies"><span class="text-slate-400"> - </span> <span>Number of copies valid</span></li>
+ <li class="flex items-center gap-2" id="vCheckPrintable"><span class="text-slate-400"> - </span> <span>Printable margins check</span></li>
+ <li class="flex items-center gap-2" id="vCheckOverlap"><span class="text-slate-400"> - </span> <span>Zero photo overlap confirmed</span></li>
+ <li class="flex items-center gap-2 font-bold" id="vCheckReady"><span class="text-slate-400"> - </span> <span>Export ready</span></li>
+ </ul>
+ </div>
+
+ <!-- STEP 14: Passport Photo History & Recent Designs -->
+ <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+ <h3 class="text-xs font-black text-slate-700 uppercase tracking-wide mb-2 flex items-center justify-between">
+ <span>Recent Presets (Step 14)</span>
+ <button id="btnClearHistory" class="text-[10px] text-slate-400 hover:text-rose-600">Clear</button>
+ </h3>
+ <div id="historyList" class="space-y-1.5 text-xs text-slate-600">
+ <p class="text-slate-400 italic text-[11px]">No recent designs yet. Privacy preserved: photos are not saved on external servers.</p>
+ </div>
+ </div>
+ </div>
+
+ <!-- ========================================== -->
+ <!-- CENTER COLUMN: Step 2, 3, 8 Live Crop & Editor (Col 4-8) -->
+ <!-- ========================================== -->
+ <div class="lg:col-span-6 space-y-4">
+ <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-col">
+ <!-- Editor Header with Auto Center & Guides -->
+ <div class="flex flex-wrap justify-between items-center border-b pb-2 mb-3 gap-2">
+ <h2 class="text-sm font-black text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+ <span class="w-5 h-5 rounded-full bg-blue-900 text-white inline-flex items-center justify-center text-xs">2</span>
+ <span>Interactive Crop & Alignment</span>
+ </h2>
+ <div class="flex items-center gap-2">
+ <label class="text-xs font-semibold text-slate-600 flex items-center gap-1 cursor-pointer">
+ <input type="checkbox" id="toggleFaceGuides" checked class="rounded text-blue-600">
+ <span>Face Guide</span>
+ </label>
+ <button id="btnAutoCenter" class="bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold px-3 py-1 rounded-md text-xs transition">
+ AUTO CENTER
+ </button>
+ </div>
+ </div>
+
+ <!-- Crop & Canvas Container -->
+ <div id="editorContainer" class="crop-container rounded-xl min-h-[350px] max-h-[440px] border border-slate-300 relative shadow-inner overflow-hidden flex items-center justify-center bg-slate-100">
+ <!-- Image target for Cropper.js -->
+ <div id="cropperWrapper" class="w-full h-full flex items-center justify-center hidden">
+ <img id="imageEditor" src="" alt="Photo Editor" class="max-w-full max-h-[420px] block">
+ </div>
+ 
+ <!-- Step 8 Face Guides Overlay -->
+ <div id="guideOverlay" class="absolute inset-0 pointer-events-none hidden z-10">
+ <div class="guide-line guide-center-vertical" title="Face Center Line"></div>
+ <div class="guide-line guide-eye-level" title="Eye-Level Guide (55-65%)"></div>
+ <div class="guide-head-boundary" title="Head Boundary (70-80% height)"></div>
+ <div class="guide-shoulder-boundary" title="Shoulder Boundary"></div>
+ </div>
+
+ <!-- Manual Brush Canvas (Hidden by default, shown during manual touch up) -->
+ <canvas id="manualTouchUpCanvas" class="hidden absolute inset-0 z-20 cursor-crosshair"></canvas>
+
+ <div id="noImagePrompt" class="text-center p-8 text-slate-400">
+ <svg class="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+ <p class="font-bold text-sm">Please upload a portrait photo in Step 1</p>
+ <p class="text-xs mt-1">Instant automatic crop and face centering will activate</p>
+ </div>
+ </div>
+
+ <!-- Step 2 Crop Controls Toolbar -->
+ <div class="mt-3 flex flex-wrap justify-between items-center gap-2 border-t pt-3">
+ <div class="flex items-center gap-1">
+ <button id="btnRotateLeft" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded text-xs font-bold border" title="Rotate -90 - "> - 90 - </button>
+ <button id="btnRotateRight" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded text-xs font-bold border" title="Rotate +90 - "> - +90 - </button>
+ <button id="btnZoomIn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded text-xs font-bold border" title="Zoom In">+</button>
+ <button id="btnZoomOut" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded text-xs font-bold border" title="Zoom Out">-</button>
+ </div>
+ <div class="flex items-center gap-2">
+ <button id="btnCropApply" class="bg-blue-700 hover:bg-blue-800 text-white font-extrabold px-4 py-1.5 rounded-lg text-xs shadow transition">
+ CROP PHOTO
+ </button>
+ </div>
+ </div>
+
+ <!-- STEP 3: Background Removal Bar -->
+ <div class="mt-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+ <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+ <h3 class="text-xs font-black text-slate-800 uppercase flex items-center gap-1">
+ <span class="w-4 h-4 rounded-full bg-purple-700 text-white inline-flex items-center justify-center text-[10px]">3</span>
+ <span>Background Removal Options</span>
+ </h3>
+ <div class="flex items-center gap-2 text-xs">
+ <label class="flex items-center gap-1 cursor-pointer font-semibold text-slate-600">
+ <input type="checkbox" id="chkKeepOriginalBg" class="rounded text-purple-600">
+ <span>Keep Original Background</span>
+ </label>
+ </div>
+ </div>
+
+ <div class="flex flex-wrap gap-2">
+ <button id="btnAutoRemoveBg" class="flex-1 bg-purple-700 hover:bg-purple-800 text-white font-black py-2.5 px-3 rounded-lg text-xs shadow flex items-center justify-center gap-2 transition">
+ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+ <span>REMOVE BACKGROUND</span>
+ </button>
+ <button id="btnToggleManualBrush" class="bg-white hover:bg-purple-50 text-purple-700 border border-purple-300 font-bold py-2.5 px-3 rounded-lg text-xs transition">
+ Manual Brush Tool
+ </button>
+ </div>
+
+ <!-- Manual Brush Tool Options (toggleable) -->
+ <div id="manualBrushControls" class="mt-3 pt-3 border-t border-slate-200 hidden space-y-2">
+ <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+ <span class="font-bold text-slate-700">Brush Mode:</span>
+ <div class="flex gap-2">
+ <label class="flex items-center gap-1 font-semibold text-rose-700">
+ <input type="radio" name="brushMode" value="erase" checked class="text-rose-600"> Eraser (Remove BG)
+ </label>
+ <label class="flex items-center gap-1 font-semibold text-emerald-700">
+ <input type="radio" name="brushMode" value="restore" class="text-emerald-600"> Restore Person
+ </label>
+ </div>
+ </div>
+ <div class="flex items-center gap-3 text-xs">
+ <span class="font-bold text-slate-700">Brush Size:</span>
+ <input type="range" id="brushSize" min="5" max="50" value="18" class="flex-grow">
+ <span id="brushSizeDisplay" class="font-mono font-bold">18px</span>
+ <button id="btnDoneManual" class="bg-purple-700 text-white px-3 py-1 rounded text-xs font-bold">Done</button>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- FACE CLEAN & STUDIO LIGHTING SECTION (Requested Prompt Feature) -->
+ <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl shadow-sm border border-blue-200">
+ <div class="flex flex-wrap justify-between items-center gap-2 border-b border-blue-200 pb-2.5 mb-3">
+ <div class="flex items-center gap-2">
+ <span class="w-6 h-6 rounded-lg bg-blue-700 text-white flex items-center justify-center font-black text-xs shadow"> - </span>
+ <div>
+ <h3 class="text-sm font-black text-blue-950 uppercase tracking-wide">Face Clean & Studio Lighting</h3>
+ <p class="text-[11px] text-blue-700">Soft even front lighting - Remove harsh shadows - Natural texture - Sharp eyes</p>
+ </div>
+ </div>
+ <label class="flex items-center gap-1.5 font-black text-xs text-blue-950 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-blue-300 shadow-sm">
+ <input type="checkbox" id="chkEnableFaceClean" checked class="rounded text-blue-700 w-4 h-4">
+ <span>Enable Studio Clean</span>
+ </label>
+ </div>
+
+ <!-- Preset Options Buttons -->
+ <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 text-xs">
+ <button class="face-clean-preset active bg-blue-700 text-white font-bold py-2 px-2 rounded-lg text-center shadow-sm transition" data-preset="official">
+ Official ID Clean
+ </button>
+ <button class="face-clean-preset bg-white hover:bg-blue-100 text-blue-900 border border-blue-200 font-bold py-2 px-2 rounded-lg text-center transition" data-preset="shadowlift">
+ Soft Front Light
+ </button>
+ <button class="face-clean-preset bg-white hover:bg-blue-100 text-blue-900 border border-blue-200 font-bold py-2 px-2 rounded-lg text-center transition" data-preset="crisp">
+ Crisp & Sharp
+ </button>
+ <button class="face-clean-preset bg-white hover:bg-blue-100 text-blue-900 border border-blue-200 font-bold py-2 px-2 rounded-lg text-center transition" data-preset="raw">
+ Raw Original
+ </button>
+ </div>
+
+ <!-- Retouch Sliders -->
+ <div id="faceCleanSliders" class="space-y-2.5 text-xs text-slate-700 bg-white p-3 rounded-lg border border-blue-100">
+ <div class="flex items-center justify-between gap-3">
+ <span class="font-bold w-44 shrink-0 text-slate-800">Remove Harsh Shadows:</span>
+ <input type="range" id="sliderShadowFill" min="0" max="100" value="65" class="w-full">
+ <span id="sliderShadowFillVal" class="w-10 text-right font-mono font-bold text-blue-900">65%</span>
+ </div>
+ <div class="flex items-center justify-between gap-3">
+ <span class="font-bold w-44 shrink-0 text-slate-800">Eye & Edge Sharpness:</span>
+ <input type="range" id="sliderSharpness" min="0" max="100" value="45" class="w-full">
+ <span id="sliderSharpnessVal" class="w-10 text-right font-mono font-bold text-blue-900">45%</span>
+ </div>
+ <div class="flex items-center justify-between gap-3">
+ <span class="font-bold w-44 shrink-0 text-slate-800">Natural Skin Tone Balance:</span>
+ <input type="range" id="sliderToneBalance" min="-50" max="50" value="0" class="w-full">
+ <span id="sliderToneBalanceVal" class="w-10 text-right font-mono font-bold text-blue-900">0</span>
+ </div>
+ <div class="flex items-center justify-between gap-3">
+ <span class="font-bold w-44 shrink-0 text-slate-800">Front Studio Light Exposure:</span>
+ <input type="range" id="sliderExposure" min="-30" max="30" value="5" class="w-full">
+ <span id="sliderExposureVal" class="w-10 text-right font-mono font-bold text-blue-900">+5%</span>
+ </div>
+ </div>
+ <p class="text-[10px] text-slate-500 mt-2 italic">*Strict Compliance: Preserves natural skin texture, realistic tone, and genuine identity. No artificial whitening or beauty filters.</p>
+ </div>
+
+ <!-- Live Portrait Preview with Chosen Background -->
+ <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+ <h3 class="text-xs font-black text-slate-700 uppercase tracking-wide mb-3 flex items-center justify-between">
+ <span>Single Passport Photo Output (Live Preview)</span>
+ <span id="singlePhotoSpecsBadge" class="text-[11px] font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">35 - 45 mm (300 DPI)</span>
+ </h3>
+ <div class="flex flex-col sm:flex-row items-center gap-4">
+ <!-- Single Photo Render Box -->
+ <div class="w-36 h-48 border-2 border-slate-300 rounded shadow-md bg-white flex items-center justify-center overflow-hidden shrink-0 relative" id="singlePhotoPreviewBox">
+ <canvas id="singlePhotoCanvas" class="max-w-full max-h-full"></canvas>
+ </div>
+ <div class="text-xs text-slate-600 space-y-2 flex-grow">
+ <p>This is your finalized individual passport photo with selected background color applied at true DPI.</p>
+ <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200 font-mono text-[11px]">
+ <div><span class="text-slate-400">Pixels:</span> <strong id="statPixels">413 - 531 px</strong></div>
+ <div><span class="text-slate-400">Physical:</span> <strong id="statPhysical">35 - 45 mm</strong></div>
+ <div><span class="text-slate-400">DPI:</span> <strong id="statDpi">300 DPI</strong></div>
+ <div><span class="text-slate-400">File Est:</span> <strong id="statFileSize">~120 KB</strong></div>
+ </div>
+ <div class="flex flex-wrap gap-2 pt-1">
+ <button id="btnDownloadSingleJpg" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-3 py-1.5 rounded text-xs transition">
+ Download Single JPG
+ </button>
+ <button id="btnDownloadSinglePng" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-3 py-1.5 rounded text-xs border border-slate-300 transition">
+ Download Single PNG
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- ========================================== -->
+ <!-- RIGHT COLUMN: Step 4 - 10 Settings & Print (Col 9-12) -->
+ <!-- ========================================== -->
+ <div class="lg:col-span-3 space-y-4">
+ 
+ <!-- Settings Panel -->
+ <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-4">
+ <h2 class="text-sm font-black text-slate-800 uppercase tracking-wide border-b pb-2 flex items-center gap-1.5">
+ <span class="w-5 h-5 rounded-full bg-blue-900 text-white inline-flex items-center justify-center text-xs">4</span>
+ <span>Color & Size Settings</span>
+ </h2>
+
+ <!-- STEP 4: Background Colors -->
+ <div>
+ <div class="flex justify-between items-center mb-2">
+ <label class="block text-xs font-bold text-slate-700 uppercase">Background Color</label>
+ <span id="currentBgLabel" class="text-[11px] font-mono font-bold text-blue-900">Pure White (#FFFFFF)</span>
+ </div>
+ <div class="flex flex-wrap gap-2 items-center mb-2">
+ <button class="bg-preset-btn active w-7 h-7 rounded-full border-2 border-blue-600 shadow-sm transition hover:scale-110" style="background-color: #FFFFFF" data-color="#FFFFFF" title="Pure White (#FFFFFF)"></button>
+ <button class="bg-preset-btn w-7 h-7 rounded-full border border-slate-300 shadow-sm transition hover:scale-110" style="background-color: #A5C9EB" data-color="#A5C9EB" title="Light Blue"></button>
+ <button class="bg-preset-btn w-7 h-7 rounded-full border border-slate-300 shadow-sm transition hover:scale-110" style="background-color: #1D4ED8" data-color="#1D4ED8" title="Blue"></button>
+ <button class="bg-preset-btn w-7 h-7 rounded-full border border-slate-300 shadow-sm transition hover:scale-110" style="background-color: #DC2626" data-color="#DC2626" title="Red"></button>
+ <button class="bg-preset-btn w-7 h-7 rounded-full border border-slate-300 shadow-sm transition hover:scale-110" style="background-color: #16A34A" data-color="#16A34A" title="Green"></button>
+ <button class="bg-preset-btn w-7 h-7 rounded-full border border-slate-300 shadow-sm transition hover:scale-110" style="background-color: #6B7280" data-color="#6B7280" title="Grey"></button>
+ <button class="bg-preset-btn w-7 h-7 rounded-full border border-slate-300 shadow-sm transition hover:scale-110" style="background-color: #E5E7EB" data-color="#E5E7EB" title="Light Grey"></button>
+ </div>
+ <div class="flex items-center gap-2">
+ <input type="color" id="customColorPicker" value="#FFFFFF" class="w-8 h-8 rounded border cursor-pointer p-0">
+ <input type="text" id="customColorHex" value="#FFFFFF" class="w-24 border rounded px-2 py-1 text-xs font-mono font-bold uppercase focus:outline-none focus:ring-1 focus:ring-blue-600">
+ <span class="text-[11px] text-slate-400">Custom HEX</span>
+ </div>
+ </div>
+
+ <!-- STEP 5 & 6: Photo Size Presets -->
+ <div class="border-t pt-3">
+ <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Passport Photo Size</label>
+ <select id="sizePreset" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
+ <option value="35x45" selected>Indian Passport / ID (35 - 45 mm)</option>
+ <option value="2x2">US / Overseas Visa (2 - 2 inch / 51 - 51 mm)</option>
+ <option value="1.2x1.6">Stamp Size (1.2 - 1.6 inch / 30 - 40 mm)</option>
+ <option value="custom">Custom Dimensions...</option>
+ </select>
+
+ <!-- Custom Size Inputs -->
+ <div id="customSizeBox" class="hidden grid grid-cols-3 gap-2 mt-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
+ <div>
+ <label class="block text-[10px] font-bold text-slate-600">Width</label>
+ <input type="number" id="customWidthVal" value="35" class="w-full border rounded p-1 text-xs font-bold">
+ </div>
+ <div>
+ <label class="block text-[10px] font-bold text-slate-600">Height</label>
+ <input type="number" id="customHeightVal" value="45" class="w-full border rounded p-1 text-xs font-bold">
+ </div>
+ <div>
+ <label class="block text-[10px] font-bold text-slate-600">Unit</label>
+ <select id="customUnitVal" class="w-full border rounded p-1 text-xs font-bold">
+ <option value="mm">mm</option>
+ <option value="cm">cm</option>
+ <option value="inch">inch</option>
+ <option value="pixel">px</option>
+ </select>
+ </div>
+ </div>
+ </div>
+
+ <!-- STEP 7: Quality / DPI -->
+ <div class="border-t pt-3">
+ <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Print Quality (DPI)</label>
+ <select id="dpiSelect" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
+ <option value="300" selected>300 DPI (High Quality - Print Ready)</option>
+ <option value="200">200 DPI (Standard Quality)</option>
+ <option value="150">150 DPI (Compressed Web/Portal)</option>
+ </select>
+ </div>
+
+ <!-- STEP 9 & 10: Sheet Paper Layout Options -->
+ <div class="border-t pt-3 space-y-3">
+ <label class="block text-xs font-black text-slate-800 uppercase">Print Sheet Layout (A4 / 4 - 6)</label>
+ 
+ <div>
+ <span class="block text-xs font-bold text-slate-600 mb-1">Paper Type</span>
+ <select id="paperSize" class="w-full border border-slate-300 rounded-lg p-2 text-xs font-bold focus:ring-2 focus:ring-blue-600">
+ <option value="4x6" selected>4 - 6 inch Photo Paper (Glossy/Matte)</option>
+ <option value="A4">A4 Paper (210 - 297 mm)</option>
+ </select>
+ </div>
+
+ <!-- One Click 8 Photo Layout for 4x6 -->
+ <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-lg flex items-center justify-between">
+ <div>
+ <span class="text-xs font-black text-amber-900 block">4 - 6 Preset:</span>
+ <span class="text-[11px] text-amber-800">Auto arrange 8 passport photos</span>
+ </div>
+ <button id="btnApply8Photos" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black px-3 py-1.5 rounded text-xs shadow transition">
+ 8 PHOTOS
+ </button>
+ </div>
+
+ <div class="grid grid-cols-2 gap-2 text-xs">
+ <div>
+ <label class="block text-slate-600 font-bold mb-1">Orientation</label>
+ <select id="paperOrientation" class="w-full border rounded p-1.5 text-xs font-semibold">
+ <option value="landscape" selected>Landscape</option>
+ <option value="portrait">Portrait</option>
+ </select>
+ </div>
+ <div>
+ <label class="block text-slate-600 font-bold mb-1">Copies</label>
+ <select id="copiesSelect" class="w-full border rounded p-1.5 text-xs font-semibold">
+ <option value="8" selected>8 Photos</option>
+ <option value="auto">Auto Max Fit</option>
+ <option value="12">12 Photos</option>
+ <option value="6">6 Photos</option>
+ <option value="4">4 Photos</option>
+ <option value="2">2 Photos</option>
+ <option value="1">1 Photo</option>
+ </select>
+ </div>
+ </div>
+
+ <div class="grid grid-cols-2 gap-2 text-xs">
+ <div>
+ <label class="block text-slate-600 font-bold mb-1">Spacing</label>
+ <select id="sheetSpacing" class="w-full border rounded p-1.5 text-xs font-semibold">
+ <option value="1.5" selected>1.5 mm (Standard)</option>
+ <option value="0">0 mm</option>
+ <option value="1">1 mm</option>
+ <option value="2">2 mm</option>
+ <option value="3">3 mm</option>
+ </select>
+ </div>
+ <div>
+ <label class="block text-slate-600 font-bold mb-1">Margin</label>
+ <select id="sheetMargin" class="w-full border rounded p-1.5 text-xs font-semibold">
+ <option value="3" selected>Minimum (3 mm)</option>
+ <option value="5">Standard (5 mm)</option>
+ </select>
+ </div>
+ </div>
+
+ <div class="flex items-center justify-between text-xs pt-1">
+ <label class="flex items-center gap-1 font-semibold text-slate-700 cursor-pointer">
+ <input type="checkbox" id="chkCutLines" checked class="rounded text-blue-600"> Cut Lines Guide
+ </label>
+ <label class="flex items-center gap-1 font-semibold text-slate-700 cursor-pointer">
+ <input type="checkbox" id="chkBorder" checked class="rounded text-blue-600"> Photo Border
+ </label>
+ </div>
+ </div>
+
+ <!-- STEP 11 & Export Action Buttons -->
+ <div class="border-t pt-4 space-y-2">
+ <button id="btnGeneratePreview" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-4 rounded-xl text-sm shadow-md transition flex items-center justify-center gap-2">
+ <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+ <span>GENERATE PRINT PREVIEW</span>
+ </button>
+ 
+ <button id="btnPrintAtCscDirect" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+ <span>PRINT AT AMAAN CSC CENTER</span>
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- ========================================== -->
+ <!-- STEP 11: FULL PRINT PREVIEW MODAL -->
+ <!-- ========================================== -->
+ <div id="previewModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 z-50 flex items-center justify-center p-3 hidden">
+ <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[95vh] flex flex-col border border-slate-200 overflow-hidden">
+ <!-- Modal Header -->
+ <div class="bg-blue-950 text-white px-6 py-3.5 flex justify-between items-center shrink-0">
+ <div class="flex items-center gap-3">
+ <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">
+ PP
+ </div>
+ <div>
+ <h3 class="font-black text-base">Printable Passport Photo Sheet Preview</h3>
+ <p class="text-xs text-blue-300">AMAAN CSC Studio Sheet Output</p>
+ </div>
+ </div>
+ <button id="btnClosePreview" class="text-white hover:text-rose-400 text-2xl font-bold leading-none">&times;</button>
+ </div>
+
+ <!-- Modal Center Layout Canvas Container -->
+ <div class="flex-grow overflow-auto bg-slate-300 p-4 flex items-center justify-center">
+ <div id="printCanvasContainer" class="shadow-2xl bg-white relative max-w-full">
+ <!-- High resolution sheet canvas will be placed here -->
+ </div>
+ </div>
+
+ <!-- Modal Footer Details & Export Buttons -->
+ <div class="bg-slate-50 px-6 py-4 border-t border-slate-200 flex flex-wrap justify-between items-center gap-4 shrink-0">
+ <div class="text-xs text-slate-700 font-medium" id="previewStatsBar">
+ <!-- Live Sheet Details injected here -->
+ </div>
+ 
+ <div class="flex flex-wrap items-center gap-2">
+ <button id="btnDownloadSheetJpg" class="bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-lg font-bold text-xs shadow transition">
+ DOWNLOAD JPG
+ </button>
+ <button id="btnDownloadSheetPng" class="bg-slate-700 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg font-bold text-xs shadow transition">
+ DOWNLOAD PNG
+ </button>
+ <button id="btnDownloadPdfSheet" class="bg-rose-700 hover:bg-rose-800 text-white px-4 py-2 rounded-lg font-bold text-xs shadow transition flex items-center gap-1.5">
+ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+ <span>DOWNLOAD PDF</span>
+ </button>
+ <button id="btnDirectPrintSheet" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-bold text-xs shadow transition flex items-center gap-1.5">
+ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+ <span>PRINT</span>
+ </button>
+ <button id="btnAddToBillFromPreview" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-black text-xs shadow transition flex items-center gap-1.5">
+ <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+ <span>PRINT AT AMAAN CSC</span>
+ </button>
+ <a href="index.html" class="bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 font-bold px-3.5 py-2 rounded-lg text-xs transition flex items-center gap-1">
+ <span> - </span>
+ <span>Back to Home</span>
+ </a>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-8">
+  <div class="container mx-auto px-4 text-center text-xs space-y-1 flex flex-col items-center">
+  <img src="logo.png" alt="AMAAN CSC CENTER Logo" class="w-12 h-12 rounded-full object-contain border-2 border-amber-400 bg-white p-0.5 shadow mb-1">
+  <p class="text-slate-300 font-bold">AMAAN CSC CENTER - Main Road, In Front of Devigali, Pipili, Puri, Odisha (PIN: 752104) - Mobile: +91 9078765653</p>
+  <p>&copy; 2026 Professional Indian Passport Photo Maker. All rights reserved.</p>
+  </div>
+  </footer>
+
+ <!-- Library Scripts -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+ <script src="services.js"></script>
+ <script src="passport-tool.js"></script>
+</body>
+</html>
