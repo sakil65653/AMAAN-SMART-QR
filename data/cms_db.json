@@ -1,6 +1,6 @@
 {
     "version":  "1.0.0",
-    "last_updated":  "2026-09-15T13:08:30.7710902+05:30",
+    "last_updated":  "2026-09-24T19:59:10.3808822+05:30",
     "services":  [
                      {
                          "id":  "srv-sahaj-portal",
@@ -19,14 +19,14 @@
                          "is_internal":  false,
                          "image_url":  "",
                          "icon":  "🏢",
-                         "status":  "hidden",
+                         "status":  "published",
                          "display_order":  2,
                          "featured":  true,
                          "custom_fields":  {
 
                                            },
                          "created_at":  "2026-09-13T13:50:24.5606898+05:30",
-                         "updated_at":  "2026-09-15T10:03:20.3739857+05:30",
+                         "updated_at":  "2026-09-24T19:59:10.3384518+05:30",
                          "created_by":  "SAKIL ALAM (Admin)",
                          "updated_by":  "SAKIL ALAM (Admin)",
                          "access_level":  "MEMBER",
@@ -9258,6 +9258,51 @@
               ],
     "activity_logs":  [
                           {
+                              "id":  "log-96f44249",
+                              "timestamp":  "2026-09-24T19:59:10.3808822+05:30",
+                              "admin":  "SAKIL ALAM (Admin)",
+                              "action":  "Edited Item",
+                              "item_type":  "services",
+                              "item_title":  "Sahaj",
+                              "details":  "Updated details and saved"
+                          },
+                          {
+                              "id":  "log-3e1d4943",
+                              "timestamp":  "2026-09-24T19:58:58.2437201+05:30",
+                              "admin":  "SAKIL ALAM (Admin)",
+                              "action":  "Admin Login Successful",
+                              "item_type":  "Security",
+                              "item_title":  "Session Created",
+                              "details":  "Admin authenticated from IP: [::1]:62521"
+                          },
+                          {
+                              "id":  "log-ff6fb0c2",
+                              "timestamp":  "2026-09-15T22:55:57.1035536+05:30",
+                              "admin":  "SAKIL ALAM (Admin)",
+                              "action":  "Admin Login Successful",
+                              "item_type":  "Security",
+                              "item_title":  "Session Created",
+                              "details":  "Admin authenticated from IP: [::1]:52742"
+                          },
+                          {
+                              "id":  "log-b7618cb2",
+                              "timestamp":  "2026-09-15T22:53:57.0391205+05:30",
+                              "admin":  "SAKIL ALAM (Admin)",
+                              "action":  "Admin Login Successful",
+                              "item_type":  "Security",
+                              "item_title":  "Session Created",
+                              "details":  "Admin authenticated from IP: [::1]:52743"
+                          },
+                          {
+                              "id":  "log-ae49790a",
+                              "timestamp":  "2026-09-15T22:15:07.7335433+05:30",
+                              "admin":  "SAKIL ALAM (Admin)",
+                              "action":  "Admin Login Successful",
+                              "item_type":  "Security",
+                              "item_title":  "Session Created",
+                              "details":  "Admin authenticated from IP: [::1]:51444"
+                          },
+                          {
                               "id":  "log-2789b9f8",
                               "timestamp":  "2026-09-15T13:08:30.7700891+05:30",
                               "admin":  "SAKIL ALAM (Admin)",
@@ -11011,51 +11056,6 @@
                               "item_type":  "Advertisement",
                               "item_title":  "Digital India \u0026 Citizen Services Video Guide",
                               "details":  "Updated Slot 2 ad settings"
-                          },
-                          {
-                              "id":  "log-603f2ca9",
-                              "timestamp":  "2026-09-14T14:04:40.8957877+05:30",
-                              "admin":  "SAKIL ALAM (Admin)",
-                              "action":  "Admin Login Successful",
-                              "item_type":  "Security",
-                              "item_title":  "Session Created",
-                              "details":  "Admin authenticated from IP: [::1]:53262"
-                          },
-                          {
-                              "id":  "log-20882966",
-                              "timestamp":  "2026-09-14T14:02:18.5541725+05:30",
-                              "admin":  "SAKIL ALAM (Admin)",
-                              "action":  "Admin Login Successful",
-                              "item_type":  "Security",
-                              "item_title":  "Session Created",
-                              "details":  "Admin authenticated from IP: [::1]:53135"
-                          },
-                          {
-                              "id":  "log-f9aec362",
-                              "timestamp":  "2026-09-14T14:00:29.2358412+05:30",
-                              "admin":  "SAKIL ALAM (Admin)",
-                              "action":  "Admin Login Successful",
-                              "item_type":  "Security",
-                              "item_title":  "Session Created",
-                              "details":  "Admin authenticated from IP: [::1]:52992"
-                          },
-                          {
-                              "id":  "log-1a513739",
-                              "timestamp":  "2026-09-14T13:58:05.3853895+05:30",
-                              "admin":  "SAKIL ALAM (Admin)",
-                              "action":  "Admin Login Successful",
-                              "item_type":  "Security",
-                              "item_title":  "Session Created",
-                              "details":  "Admin authenticated from IP: [::1]:52767"
-                          },
-                          {
-                              "id":  "log-7d1c5b6e",
-                              "timestamp":  "2026-09-14T13:56:24.5656167+05:30",
-                              "admin":  "SAKIL ALAM (Admin)",
-                              "action":  "Admin Login Successful",
-                              "item_type":  "Security",
-                              "item_title":  "Session Created",
-                              "details":  "Admin authenticated from IP: [::1]:52639"
                           }
                       ],
     "settings":  {
@@ -11070,7 +11070,7 @@
                      "maintenance_mode":  false,
                      "theme_default":  "light",
                      "admin_password":  "9078",
-                     "notice_ticker_text":  "ସ୍ୱାଗତମ୍! ଅମାନ ସି.ଏସ.ସି ସେଣ୍ଟର (ପିପିଲି, ପୁରୀ) - ୧୫୦ରୁ ଊର୍ଦ୍ଧ୍ୱ ସରକାରୀ ସେବା, ଆଧାର ସଂଶୋଧନ ଓ ପାସପୋର୍ଟ ଫଟୋ ସେବା ଉପଲବ୍ଧ!",
+                     "notice_ticker_text":  "Welcome! AMAAN CSC CENTER (Pipili, Puri) - Over 150 Government Services, Aadhaar Correction & Passport Photo Services Available!",
                      "notice_ticker_enabled":  false
                  },
     "advertisements":  [
