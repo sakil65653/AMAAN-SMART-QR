@@ -13,3 +13,4 @@
 - **Local Windows Server**: Double-click `START_SERVER.bat` (starts server on `http://localhost:5050`)
 - **Cloud Hosting (Render/Railway)**: Run `node server.js`
 - **Push Updates to GitHub**: Double-click `PUSH_TO_GITHUB.bat`
+# AMAAN-SMART-QR

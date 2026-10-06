@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id             String    @id @default(uuid())
+  username       String    @unique
+  email          String    @unique
+  passwordHash   String
+  role           String    @default("ADMIN") // ADMIN or STAFF
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sessions       Session[]
+  auditLogs      AuditLog[]
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  adminId      String
+  token        String   @unique
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  admin        Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+}
+
+model Settings {
+  id           String   @id @default(uuid())
+  category     String   // SHOP, UI, PRINTING, PAYMENT, SYSTEM
+  key          String   @unique
+  value        String   // JSON stringified value
+  updatedAt    DateTime @updatedAt
+}
+
+model Printer {
+  id                 String             @id @default(uuid())
+  name               String
+  displayName        String
+  model              String?
+  enabled            Boolean            @default(true)
+  isDefault          Boolean            @default(false)
+  capabilities       PrinterCapability?
+  jobs               PrintJob[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model PrinterCapability {
+  id                 String   @id @default(uuid())
+  printerId          String   @unique
+  supportedSizes     String   // JSON array ["A4", "A3", "4x6"]
+  supportsColor      Boolean  @default(false)
+  supportsDuplex     Boolean  @default(false)
+  defaultPaper       String   @default("A4")
+  defaultColorMode   String   @default("B&W")
+  defaultSide        String   @default("SINGLE")
+  printer            Printer  @relation(fields: [printerId], references: [id], onDelete: Cascade)
+}
+
+model Customer {
+  id           String     @id @default(uuid())
+  name         String?
+  mobile       String?
+  totalJobs    Int        @default(0)
+  totalSpent   Float      @default(0.0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  jobs         PrintJob[]
+}
+
+model PrintJob {
+  id               String         @id @default(uuid())
+  jobId            String         @unique // AMAAN-20261006-0001
+  customerId       String?
+  printerId        String?
+  status           String         @default("UPLOADED") // UPLOADED, PAYMENT_PENDING, APPROVED, PRINTING, COMPLETED, FAILED, CANCELLED
+  paperSize        String         @default("A4")
+  colorMode        String         @default("B&W") // B&W or COLOR
+  sideMode         String         @default("SINGLE") // SINGLE or DUPLEX
+  duplexEdge       String?        // LONG_EDGE or SHORT_EDGE
+  copies           Int            @default(1)
+  totalPages       Int            @default(1)
+  totalSheets      Int            @default(1)
+  totalAmount      Float          @default(0.0)
+  paymentStatus    String         @default("PENDING") // PENDING, PAID, REFUNDED
+  paymentMethod    String?        // UPI, ONLINE, CASH, COUNTER
+  paymentId        String?
+  priority         Int            @default(0) // Higher number = higher priority
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  customer         Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  printer          Printer?       @relation(fields: [printerId], references: [id], onDelete: SetNull)
+  files            PrintFile[]
+  attempts         PrintAttempt[]
+  receipt          Receipt?
+}
+
+model PrintFile {
+  id             String    @id @default(uuid())
+  jobId          String
+  fileName       String
+  fileType       String
+  fileSize       Int
+  pageCount      Int
+  filePath       String
+  previewPath    String?
+  convertedPath  String?
+  isDeleted      Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  job            PrintJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model PrintAttempt {
+  id             String    @id @default(uuid())
+  jobId          String
+  printerId      String
+  status         String    // SUCCESS, FAILED
+  errorMessage   String?
+  attemptedAt    DateTime  @default(now())
+  job            PrintJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model Service {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  icon         String?
+  price        Float
+  isActive     Boolean  @default(true)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Receipt {
+  id           String   @id @default(uuid())
+  jobId        String   @unique
+  receiptData  String   // JSON blob containing snapshot of job for receipt
+  generatedAt  DateTime @default(now())
+  job          PrintJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  adminId      String?
+  action       String   // e.g. LOGIN, UPDATE_PRICE, APPROVE_JOB, REPRINT
+  details      String   // JSON details of the action
+  ipAddress    String?
+  createdAt    DateTime @default(now())
+  admin        Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+}
+
+model Notification {
+  id           String   @id @default(uuid())
+  title        String
+  message      String
+  type         String   // INFO, WARNING, ERROR, SUCCESS
+  isRead       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
